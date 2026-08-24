@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_screen">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingBottom="24dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_header_curved"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:paddingTop="40dp"
+            android:paddingBottom="28dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🎮 Games"
+                android:textColor="#FFFFFF"
+                android:fontFamily="@font/baloo2"
+                android:textStyle="bold"
+                android:textSize="26sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Play and learn your signs!"
+                android:textColor="#E0F2F1"
+                android:fontFamily="@font/baloo2"
+                android:textSize="15sp" />
+        </LinearLayout>
+
+        <!-- ===== Memory Match ===== -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="6dp"
+            android:text="🧩 Memory Match"
+            android:textColor="@color/text_primary"
+            android:fontFamily="@font/baloo2"
+            android:textStyle="bold"
+            android:textSize="19sp" />
+
+        <LinearLayout
+            android:id="@+id/cardEasy"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/bg_card_white"
+            android:elevation="2dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="18dp">
+
+            <TextView android:layout_width="48dp" android:layout_height="wrap_content" android:gravity="center" android:text="🙂" android:textSize="30sp" />
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="14dp" android:orientation="vertical">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Easy" android:textColor="#00838A" android:fontFamily="@font/baloo2" android:textStyle="bold" android:textSize="18sp" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="3 pairs · 6 cards" android:textColor="@color/text_secondary" android:fontFamily="@font/baloo2" android:textSize="13sp" />
+            </LinearLayout>
+            <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_chevron_right" android:contentDescription="@null" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/cardMedium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_card_white"
+            android:elevation="2dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="18dp">
+
+            <TextView android:layout_width="48dp" android:layout_height="wrap_content" android:gravity="center" android:text="😃" android:textSize="30sp" />
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="14dp" android:orientation="vertical">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Medium" android:textColor="#00838A" android:fontFamily="@font/baloo2" android:textStyle="bold" android:textSize="18sp" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="6 pairs · 12 cards" android:textColor="@color/text_secondary" android:fontFamily="@font/baloo2" android:textSize="13sp" />
+            </LinearLayout>
+            <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_chevron_right" android:contentDescription="@null" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/cardHard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_card_white"
+            android:elevation="2dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="18dp">
+
+            <TextView android:layout_width="48dp" android:layout_height="wrap_content" android:gravity="center" android:text="🤩" android:textSize="30sp" />
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="14dp" android:orientation="vertical">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Hard" android:textColor="#00838A" android:fontFamily="@font/baloo2" android:textStyle="bold" android:textSize="18sp" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="8 pairs · 16 cards" android:textColor="@color/text_secondary" android:fontFamily="@font/baloo2" android:textSize="13sp" />
+            </LinearLayout>
+            <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_chevron_right" android:contentDescription="@null" />
+        </LinearLayout>
+
+        <!-- ===== Flappy Sign ===== -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="22dp"
+            android:layout_marginBottom="6dp"
+            android:text="🤟 Flappy Sign"
+            android:textColor="@color/text_primary"
+            android:fontFamily="@font/baloo2"
+            android:textStyle="bold"
+            android:textSize="19sp" />
+
+        <LinearLayout
+            android:id="@+id/cardFlappy"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/bg_card_white"
+            android:elevation="2dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="18dp">
+
+            <TextView android:layout_width="48dp" android:layout_height="wrap_content" android:gravity="center" android:text="🐤" android:textSize="30sp" />
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="14dp" android:orientation="vertical">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Play Flappy Sign" android:textColor="#00838A" android:fontFamily="@font/baloo2" android:textStyle="bold" android:textSize="18sp" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Fly through the signs · Beat the leaderboard!" android:textColor="@color/text_secondary" android:fontFamily="@font/baloo2" android:textSize="13sp" />
+            </LinearLayout>
+            <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_chevron_right" android:contentDescription="@null" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.core.widget.NestedScrollView>

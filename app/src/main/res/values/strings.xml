@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">SignVibe</string>
+
+    <!-- Splash -->
+    <string name="splash_tagline">Learning FSL, one sign at a time</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_title_1">Welcome!</string>
+    <string name="onboarding_desc_1">Discover FSL SignSpeak - your gateway to learning connecting., and communicating in Filipino Sign Language. Let\'s start your journey today!</string>
+
+    <string name="onboarding_title_2">Learn!</string>
+    <string name="onboarding_desc_2">Start your journey today</string>
+
+    <string name="onboarding_title_3">Translate!</string>
+    <string name="onboarding_desc_3">Translate sign language instantly</string>
+
+    <string name="skip">Skip</string>
+    <string name="next">Next</string>
+    <string name="get_started">Get Started</string>
+
+    <!-- Bottom Navigation -->
+    <string name="nav_learn">Learn</string>
+    <string name="nav_translate">Translate</string>
+    <string name="nav_game">Game</string>
+    <string name="nav_profile">Profile</string>
+
+    <!-- Learn tab -->
+    <string name="learn_greeting">Hello, Learner! \uD83D\uDC4B</string>
+    <string name="learn_greeting_fmt">Hello, %1$s! \uD83D\uDC4B</string>
+    <string name="learn_heading">What will you learn today?</string>
+    <string name="learn_lessons_completed_fmt">%1$d lessons completed</string>
+    <string name="modules_title">Modules</string>
+    <string name="lessons_progress_fmt">%1$d/%2$d lessons</string>
+
+    <string name="module_alphabet_title">Alphabet</string>
+    <string name="module_alphabet_desc">Learn FSL signs for letters A to Z</string>
+    <string name="module_numbers_title">Numbers</string>
+    <string name="module_numbers_desc">Learn FSL signs for numbers 1 to 10</string>
+    <string name="module_words_title">Common Words</string>
+    <string name="module_words_desc">Everyday words in Filipino Sign Language</string>
+    <string name="module_greetings_title">Greetings &amp; Expressions</string>
+    <string name="module_greetings_desc">Say hello, thank you, and more in FSL</string>
+    <string name="module_colors_title">Colors</string>
+    <string name="module_colors_desc">Learn the signs for colors in FSL</string>
+
+    <!-- Translate tab -->
+    <string name="translate_heading">Ready to translate FSL?\nChoose a category below:</string>
+    <string name="translate_alphabet_title">Alphabet Detection</string>
+    <string name="translate_alphabet_desc">Detect FSL letters A\u2013Z</string>
+    <string name="translate_number_title">Number Detection</string>
+    <string name="translate_number_desc">Detect FSL numbers 1\u201310</string>
+    <string name="translate_word_title">Word Detection</string>
+    <string name="translate_word_desc">Detect common FSL words</string>
+
+    <!-- Game tab -->
+    <string name="game_title">Game</string>
+    <string name="game_coming_soon">Coming soon</string>
+
+    <!-- Profile tab -->
+    <string name="profile_grade_section_fmt">Grade %1$d - %2$s</string>
+    <string name="my_progress">My Progress</string>
+    <string name="lessons_completed_label">Lessons Completed</string>
+    <string name="information_title">Information</string>
+    <string name="about_signvibe">About SignVibe</string>
+    <string name="how_to_use">How to Use the App</string>
+    <string name="log_out">Log Out</string>
+
+    <!-- Lesson list / detail -->
+    <string name="no_lessons_yet">No lessons yet for this module.\nCheck back soon!</string>
+    <string name="take_module_quiz">Take Module Quiz</string>
+    <string name="about_this_sign">About this sign</string>
+    <string name="mark_as_done">Mark as Done</string>
+    <string name="video_not_uploaded">Video not yet uploaded</string>
+    <string name="could_not_load_video">Could not load video</string>
+
+    <!-- Number Detection camera -->
+    <string name="detected_label">DETECTED</string>
+    <string name="no_hand_detected">No hand detected</string>
+    <string name="camera_permission_needed">Camera access is needed to detect signs.\nPlease allow it in Settings.</string>
+    <string name="speak">Speak</string>
+    <string name="clear">Clear</string>
+    <string name="flip">Flip</string>
+    <string name="stop">Stop</string>
+    <string name="coming_soon_category">This detection mode is coming soon!</string>
+
+    <!-- Detection instructions screen -->
+    <string name="instructions_title_alphabet">Alphabet Detection Instructions</string>
+    <string name="instructions_title_number">Number Detection Instructions</string>
+    <string name="instructions_title_word">Word Detection Instructions</string>
+    <string name="instructions_bullet1">Hold your hand clearly in the camera view.</string>
+    <string name="instructions_bullet2">Make sure your hand is in the box for the best detection rate.</string>
+    <string name="instructions_bullet3_alphabet">Form the sign language letter gestures one at a time.</string>
+    <string name="instructions_bullet3_number">Form the sign language number gestures one at a time.</string>
+    <string name="instructions_bullet3_word">Form the sign language word gestures one at a time.</string>
+    <string name="instructions_bullet4">Hold each gesture steady for 2 seconds.</string>
+    <string name="start_detection">\uD83D\uDE80  Start Detection</string>
+    <string name="confidence_fmt">Confidence: %1$d%%</string>
+
+    <!-- Number range split (1-10 / 11-20) -->
+    <string name="number_detection_title_1_10">Number Detection (1-10)</string>
+    <string name="number_detection_title_11_20">Number Detection (11-20)</string>
+    <string name="choose_number_range">Which numbers are you practicing?</string>
+    <string name="range_1_10">Numbers 1-10</string>
+    <string name="range_11_20">Numbers 11-20</string>
+
+    <string name="app_version">SignVibe v1.0.0</string>
+
+    <!-- Login -->
+    <string name="welcome_back">Welcome back! \uD83D\uDC4B</string>
+    <string name="login_subtitle">Log in to continue learning Filipino Sign Language</string>
+    <string name="email_label">Email Address</string>
+    <string name="email_hint">Enter your email</string>
+    <string name="password_label">Password</string>
+    <string name="password_hint">Enter your password</string>
+    <string name="login_button">Log In</string>
+    <string name="account_created_by_teacher">Your account is created by your teacher.</string>
+    <string name="error_empty_fields">Please fill in all fields</string>
+    <string name="error_invalid_email">Please enter a valid email</string>
+    <string name="logging_in">Logging in…</string>
+
+
+    <string name="module_icon_desc">Module icon</string>
+    <string name="chevron_icon_desc">Navigate to module details</string>
+
+    <!-- quiz tracing -->
+    <string name="quiz_tracing_title">Tracing Quiz</string>
+    <string name="quiz_tracing_instruction">Trace the letter with your finger</string>
+    <string name="quiz_listen">Listen</string>
+    <string name="quiz_clear">Clear</string>
+    <string name="quiz_next">Next</string>
+    <string name="quiz_finish">Finish</string>
+
+    <string name="quiz_tracing_instruction_number">Trace the number with your finger</string>
+    <string name="quiz_tracing_progress_fmt">%1$d of %2$d</string>
+    <string name="quiz_result_pass_fmt">Great job! You passed — %1$d of %2$d correct (%3$d%%)</string>
+    <string name="quiz_result_fail_fmt">Nice try! %1$d of %2$d correct (%3$d%%). Keep practicing!</string>
+    <string name="quiz_locked_hint">Finish all lessons to unlock the quiz</string>
+    <string name="quiz_already_completed_fmt">Already completed — %1$d%%</string>
+    <string name="quiz_choice_title">Quiz</string>
+    <string name="quiz_choice_prompt">Watch the sign, then tap the correct word</string>
+
+
+    <!-- star -->
+    <string name="quiz_result_perfect">Perfect! ⭐⭐⭐</string>
+    <string name="quiz_result_great">Great job! ⭐⭐</string>
+    <string name="quiz_result_good">Well done! ⭐</string>
+    <string name="quiz_result_try_again">Nice try! Keep practicing</string>
+    <string name="quiz_result_score_fmt">You got %1$d of %2$d correct (%3$d%%)</string>
+    <string name="quiz_result_done">Done</string>
+    <string name="stars_earned_label">Stars Earned</string>
+
+    <!--Leaderboard-->
+    <string name="profile_flappy_best_fmt">Your best: %1$d</string>
+</resources>

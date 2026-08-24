@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_screen"
+    android:padding="32dp">
+
+    <LinearLayout
+        android:id="@+id/starsRow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/txtHeadline"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintVertical_chainStyle="packed">
+
+        <ImageView
+            android:id="@+id/star1"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginEnd="8dp"
+            android:src="@drawable/ic_star_empty"
+            android:contentDescription="@null" />
+
+        <ImageView
+            android:id="@+id/star2"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginHorizontal="8dp"
+            android:src="@drawable/ic_star_empty"
+            android:contentDescription="@null" />
+
+        <ImageView
+            android:id="@+id/star3"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginStart="8dp"
+            android:src="@drawable/ic_star_empty"
+            android:contentDescription="@null" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/txtHeadline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
+        android:fontFamily="@font/baloo2"
+        android:textStyle="bold"
+        android:textColor="@color/text_primary"
+        android:textSize="26sp"
+        tools:text="Perfect! ⭐⭐⭐"
+        app:layout_constraintTop_toBottomOf="@id/starsRow"
+        app:layout_constraintBottom_toTopOf="@id/txtScore"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/txtScore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/baloo2"
+        android:textColor="@color/text_secondary"
+        android:textSize="17sp"
+        tools:text="You got 5 of 5 correct (100%)"
+        app:layout_constraintTop_toBottomOf="@id/txtHeadline"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/btnDone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_button_primary"
+        android:text="@string/quiz_result_done"
+        android:fontFamily="@font/baloo2"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:textSize="17sp"
+        android:gravity="center"
+        android:paddingVertical="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

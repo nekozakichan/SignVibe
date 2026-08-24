@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0b2233">
+
+    <com.ucucite.signvibe.ui.game.FlappySignView
+        android:id="@+id/gameView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center" />
+
+    <!-- PAUSE BUTTON -->
+    <TextView
+        android:id="@+id/btnPause"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_gravity="top|start"
+        android:layout_margin="14dp"
+        android:gravity="center"
+        android:text="⏸"
+        android:textSize="22sp"
+        android:visibility="gone" />
+
+    <!-- START OVERLAY -->
+    <FrameLayout
+        android:id="@+id/overlayStart"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#8CC9F0FF">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:background="@drawable/bg_card_white"
+            android:padding="22dp"
+            android:layout_margin="24dp">
+
+            <TextView
+                android:id="@+id/flyerPreview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🤟"
+                android:textSize="44sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Flappy Sign"
+                android:textColor="#00838A"
+                android:fontFamily="@font/baloo2"
+                android:textStyle="bold"
+                android:textSize="30sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="Catch the target sign!"
+                android:textColor="@color/text_secondary"
+                android:fontFamily="@font/baloo2"
+                android:textSize="15sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:text="CHOOSE YOUR FLYER"
+                android:textColor="@color/text_secondary"
+                android:fontFamily="@font/baloo2"
+                android:textStyle="bold"
+                android:textSize="12sp" />
+
+            <GridLayout
+                android:id="@+id/flyerGrid"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:columnCount="4" />
+
+            <Button
+                android:id="@+id/btnPlay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:paddingHorizontal="34dp"
+                android:paddingVertical="12dp"
+                android:text="Play ▶"
+                android:textColor="#FFFFFF"
+                android:fontFamily="@font/baloo2"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:stateListAnimator="@null" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:gravity="center"
+                android:text="Tap to flap. Pindutin para lumipad!"
+                android:textColor="@color/text_secondary"
+                android:fontFamily="@font/baloo2"
+                android:textSize="12sp" />
+        </LinearLayout>
+    </FrameLayout>
+
+    <!-- GAME OVER OVERLAY -->
+    <FrameLayout
+        android:id="@+id/overlayOver"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#8CC9F0FF"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:background="@drawable/bg_card_white"
+            android:padding="26dp"
+            android:layout_margin="24dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Oops! 💥"
+                android:textColor="#00838A"
+                android:fontFamily="@font/baloo2"
+                android:textStyle="bold"
+                android:textSize="30sp" />
+
+            <TextView
+                android:id="@+id/txtStars"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="☆☆☆"
+                android:textSize="26sp" />
+
+            <TextView
+                android:id="@+id/txtScore"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="Score: 0"
+                android:textColor="@color/text_primary"
+                android:fontFamily="@font/baloo2"
+                android:textStyle="bold"
+                android:textSize="22sp" />
+
+            <TextView
+                android:id="@+id/txtNewBest"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="🎉 New best!"
+                android:textColor="#FF5A7A"
+                android:fontFamily="@font/baloo2"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/btnRetry"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:paddingHorizontal="30dp"
+                android:paddingVertical="12dp"
+                android:text="Play Again ↻"
+                android:textColor="#FFFFFF"
+                android:fontFamily="@font/baloo2"
+                android:textStyle="bold"
+                android:textSize="17sp"
+                android:stateListAnimator="@null" />
+
+            <Button
+                android:id="@+id/btnViewLeaderboard"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:paddingHorizontal="30dp"
+                android:paddingVertical="12dp"
+                android:text="View Leaderboard 🏆"
+                android:textColor="#FFFFFF"
+                android:fontFamily="@font/baloo2"
+                android:textStyle="bold"
+                android:textSize="15sp"
+                android:stateListAnimator="@null" />
+
+            <Button
+                android:id="@+id/btnBack"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:paddingHorizontal="30dp"
+                android:paddingVertical="12dp"
+                android:text="Back to Games"
+                android:textColor="#FFFFFF"
+                android:fontFamily="@font/baloo2"
+                android:textStyle="bold"
+                android:textSize="15sp"
+                android:stateListAnimator="@null" />
+        </LinearLayout>
+    </FrameLayout>
+
+    <!-- PAUSE OVERLAY -->
+    <FrameLayout
+        android:id="@+id/overlayPause"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#8C12324A"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:background="@drawable/bg_card_white"
+            android:padding="26dp"
+            android:layout_margin="24dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Paused"
+                android:textColor="#00838A"
+                android:fontFamily="@font/baloo2"
+                android:textStyle="bold"
+                android:textSize="28sp" />
+
+            <Button
+                android:id="@+id/btnResume"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:paddingHorizontal="34dp"
+                android:paddingVertical="12dp"
+                android:text="Resume ▶"
+                android:textColor="#FFFFFF"
+                android:fontFamily="@font/baloo2"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:stateListAnimator="@null" />
+
+            <Button
+                android:id="@+id/btnQuit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:paddingHorizontal="30dp"
+                android:paddingVertical="12dp"
+                android:text="Quit to Games"
+                android:textColor="#FFFFFF"
+                android:fontFamily="@font/baloo2"
+                android:textStyle="bold"
+                android:textSize="15sp"
+                android:stateListAnimator="@null" />
+        </LinearLayout>
+    </FrameLayout>
+
+</FrameLayout>

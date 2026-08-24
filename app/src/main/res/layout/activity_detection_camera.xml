@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000">
+
+    <androidx.camera.view.PreviewView
+        android:id="@+id/previewView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <com.ucucite.signvibe.ui.translate.HandLandmarkOverlayView
+        android:id="@+id/overlayView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <!-- Top bar -->
+    <ImageView
+        android:id="@+id/btnBack"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="44dp"
+        android:layout_marginStart="20dp"
+        android:background="@drawable/bg_circle_btn_dark"
+        android:src="@drawable/ic_chevron_left_white"
+        android:padding="9dp"
+        android:contentDescription="@null"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/txtTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_title_pill_dark"
+        android:paddingHorizontal="18dp"
+        android:paddingVertical="9dp"
+        android:fontFamily="@font/baloo2"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:textSize="15sp"
+        android:text="@string/translate_number_title"
+        app:layout_constraintTop_toTopOf="@id/btnBack"
+        app:layout_constraintBottom_toBottomOf="@id/btnBack"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <ImageView
+        android:id="@+id/btnSpeakTop"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="20dp"
+        android:background="@drawable/bg_circle_btn_dark"
+        android:src="@drawable/ic_volume_up_white"
+        android:padding="9dp"
+        android:contentDescription="@null"
+        app:layout_constraintTop_toTopOf="@id/btnBack"
+        app:layout_constraintBottom_toBottomOf="@id/btnBack"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Scan frame -->
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideScanTop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.20" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideScanBottom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.62" />
+
+    <ImageView
+        android:layout_width="32dp" android:layout_height="32dp"
+        android:layout_marginStart="24dp"
+        android:src="@drawable/ic_scan_corner_teal"
+        android:contentDescription="@null"
+        app:layout_constraintTop_toTopOf="@id/guideScanTop"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:layout_width="32dp" android:layout_height="32dp"
+        android:layout_marginEnd="24dp"
+        android:rotation="90"
+        android:src="@drawable/ic_scan_corner_teal"
+        android:contentDescription="@null"
+        app:layout_constraintTop_toTopOf="@id/guideScanTop"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <ImageView
+        android:layout_width="32dp" android:layout_height="32dp"
+        android:layout_marginStart="24dp"
+        android:rotation="270"
+        android:src="@drawable/ic_scan_corner_teal"
+        android:contentDescription="@null"
+        app:layout_constraintBottom_toBottomOf="@id/guideScanBottom"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:layout_width="32dp" android:layout_height="32dp"
+        android:layout_marginEnd="24dp"
+        android:rotation="180"
+        android:src="@drawable/ic_scan_corner_teal"
+        android:contentDescription="@null"
+        app:layout_constraintBottom_toBottomOf="@id/guideScanBottom"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/txtNoHand"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_title_pill_dark"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="8dp"
+        android:fontFamily="@font/baloo2"
+        android:textColor="#B3FFFFFF"
+        android:textSize="13sp"
+        android:text="@string/no_hand_detected"
+        app:layout_constraintTop_toTopOf="@id/guideScanTop"
+        app:layout_constraintBottom_toBottomOf="@id/guideScanBottom"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/txtConfidence"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:background="@drawable/bg_confidence_badge"
+        android:paddingHorizontal="14dp"
+        android:paddingVertical="4dp"
+        android:fontFamily="@font/baloo2"
+        android:textStyle="bold"
+        android:textColor="@color/teal_gradient_top"
+        android:textSize="11sp"
+        android:visibility="gone"
+        tools:text="Confidence: 94%"
+        tools:visibility="visible"
+        app:layout_constraintTop_toBottomOf="@id/guideScanBottom"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        xmlns:tools="http://schemas.android.com/tools" />
+
+    <!-- Permission denied message -->
+    <TextView
+        android:id="@+id/txtPermissionDenied"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="40dp"
+        android:gravity="center"
+        android:fontFamily="@font/baloo2"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        android:lineSpacingExtra="4dp"
+        android:text="@string/camera_permission_needed"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Bottom panel -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/bottomPanel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_bottom_panel_dark"
+        android:paddingHorizontal="20dp"
+        android:paddingTop="24dp"
+        android:paddingBottom="36dp"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <TextView
+            android:id="@+id/txtDetectedLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/detected_label"
+            android:textColor="#B3FFFFFF"
+            android:fontFamily="@font/baloo2"
+            android:textSize="11sp"
+            android:letterSpacing="0.1"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/txtDetectedValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="—"
+            android:textColor="@color/white"
+            android:fontFamily="@font/baloo2"
+            android:textStyle="bold"
+            android:textSize="52sp"
+            app:layout_constraintTop_toBottomOf="@id/txtDetectedLabel"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <LinearLayout
+            android:id="@+id/btnSpeak"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_speak_pill"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="10dp"
+            android:orientation="horizontal"
+            android:gravity="center"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/ic_volume_up_teal"
+                android:contentDescription="@null" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:text="@string/speak"
+                android:textColor="@color/teal_gradient_top"
+                android:fontFamily="@font/baloo2"
+                android:textStyle="bold"
+                android:textSize="13sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/btnClear"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="20dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_control_btn_dark"
+            android:orientation="horizontal"
+            android:gravity="center"
+            app:layout_constraintTop_toBottomOf="@id/txtDetectedValue"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btnFlip"
+            app:layout_constraintHorizontal_chainStyle="spread">
+
+            <ImageView
+                android:layout_width="15dp" android:layout_height="15dp"
+                android:src="@drawable/ic_clear_trash_white"
+                android:contentDescription="@null" />
+
+            <TextView
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:text="@string/clear"
+                android:textColor="@color/white"
+                android:fontFamily="@font/baloo2"
+                android:textStyle="bold"
+                android:textSize="13sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/btnFlip"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginStart="10dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_control_btn_dark"
+            android:orientation="horizontal"
+            android:gravity="center"
+            app:layout_constraintTop_toBottomOf="@id/txtDetectedValue"
+            app:layout_constraintStart_toEndOf="@id/btnClear"
+            app:layout_constraintEnd_toStartOf="@id/btnStop">
+
+            <ImageView
+                android:layout_width="15dp" android:layout_height="15dp"
+                android:src="@drawable/ic_flip_camera"
+                android:contentDescription="@null" />
+
+            <TextView
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:text="@string/flip"
+                android:textColor="@color/white"
+                android:fontFamily="@font/baloo2"
+                android:textStyle="bold"
+                android:textSize="13sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/btnStop"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginStart="10dp"
+            android:layout_weight="2"
+            android:background="@drawable/bg_button_login"
+            android:orientation="horizontal"
+            android:gravity="center"
+            app:layout_constraintTop_toBottomOf="@id/txtDetectedValue"
+            app:layout_constraintStart_toEndOf="@id/btnFlip"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <ImageView
+                android:layout_width="15dp" android:layout_height="15dp"
+                android:src="@drawable/ic_stop_white"
+                android:contentDescription="@null" />
+
+            <TextView
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:text="@string/stop"
+                android:textColor="@color/white"
+                android:fontFamily="@font/baloo2"
+                android:textStyle="bold"
+                android:textSize="13sp" />
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,13 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.SignVibe" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Brand teal instead of Material3's default purple -->
+        <item name="colorPrimary">@color/teal_dark</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorPrimaryVariant">@color/teal_gradient_top</item>
+
+        <!-- Status bar (top system bar) -->
+        <item name="android:statusBarColor">@color/teal_dark</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+</resources>

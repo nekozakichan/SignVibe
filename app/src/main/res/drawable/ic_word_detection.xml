@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp" android:height="48dp"
+    android:viewportWidth="48" android:viewportHeight="48">
+    <!-- Blue square (A) -->
+    <path
+        android:fillColor="#4A90D9"
+        android:pathData="M4,10 L20,10 A4,4 0 0 1 24,14 L24,26 A4,4 0 0 1 20,30 L8,30 A4,4 0 0 1 4,26 Z" />
+    <!-- Orange square (文) -->
+    <path
+        android:fillColor="#F5A623"
+        android:pathData="M24,18 L40,18 A4,4 0 0 1 44,22 L44,34 A4,4 0 0 1 40,38 L28,38 A4,4 0 0 1 24,34 Z" />
+</vector>

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_memory_card_back"
+    android:clickable="true"
+    android:focusable="true">
+
+    <!-- Back face -->
+    <TextView
+        android:id="@+id/backQ"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="?"
+        android:textColor="#FFFFFF"
+        android:fontFamily="@font/baloo2"
+        android:textStyle="bold"
+        android:textSize="34sp" />
+
+    <!-- Front face (hidden until flipped) -->
+    <FrameLayout
+        android:id="@+id/front"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <androidx.media3.ui.PlayerView
+            android:id="@+id/playerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:use_controller="false"
+            app:resize_mode="zoom" />
+
+        <TextView
+            android:id="@+id/txtWord"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:padding="6dp"
+            android:textColor="#00696F"
+            android:fontFamily="@font/baloo2"
+            android:textStyle="bold"
+            android:maxLines="2"
+            android:ellipsize="end"
+            app:autoSizeTextType="uniform"
+            app:autoSizeMinTextSize="12sp"
+            app:autoSizeMaxTextSize="20sp" />
+
+        <!-- Shows while a sign video is still loading -->
+        <ProgressBar
+            android:id="@+id/cardLoading"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
+            android:layout_gravity="center"
+            android:indeterminateTint="#00838A"
+            android:visibility="gone" />
+    </FrameLayout>
+
+    <!-- Match tick -->
+    <ImageView
+        android:id="@+id/imgCheck"
+        android:layout_width="34dp"
+        android:layout_height="34dp"
+        android:layout_gravity="center"
+        android:src="@drawable/ic_check_circle"
+        android:visibility="gone"
+        android:contentDescription="@null" />
+
+</FrameLayout>

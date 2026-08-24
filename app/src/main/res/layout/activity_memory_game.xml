@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_screen">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!-- Header -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#00838A"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="8dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="14dp"
+            android:paddingBottom="14dp">
+
+            <ImageView
+                android:id="@+id/btnBack"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="8dp"
+                android:src="@drawable/ic_back_arrow"
+                android:contentDescription="Back" />
+
+            <TextView
+                android:id="@+id/txtTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:text="Memory Match"
+                android:textColor="#FFFFFF"
+                android:fontFamily="@font/baloo2"
+                android:textStyle="bold"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/txtMoves"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tries: 0"
+                android:textColor="#FFFFFF"
+                android:fontFamily="@font/baloo2"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <!-- Board -->
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:fillViewport="true">
+
+            <GridLayout
+                android:id="@+id/gridBoard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:padding="10dp"
+                android:alignmentMode="alignMargins" />
+        </ScrollView>
+
+    </LinearLayout>
+
+    <!-- Loading -->
+    <ProgressBar
+        android:id="@+id/loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:indeterminateTint="#00838A" />
+
+    <!-- Not-enough-lessons message -->
+    <LinearLayout
+        android:id="@+id/emptyState"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="32dp"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🧩"
+            android:textSize="52sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:gravity="center"
+            android:text="Not enough lessons yet!\nAsk your teacher to add more signs."
+            android:textColor="#546E7A"
+            android:fontFamily="@font/baloo2"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <!-- Win overlay -->
+    <FrameLayout
+        android:id="@+id/winOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#B3000000"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@drawable/bg_card_white"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="28dp">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <ImageView android:id="@+id/star1" android:layout_width="46dp" android:layout_height="46dp" android:src="@drawable/ic_star" android:contentDescription="@null" />
+                <ImageView android:id="@+id/star2" android:layout_width="54dp" android:layout_height="54dp" android:layout_marginHorizontal="6dp" android:src="@drawable/ic_star" android:contentDescription="@null" />
+                <ImageView android:id="@+id/star3" android:layout_width="46dp" android:layout_height="46dp" android:src="@drawable/ic_star" android:contentDescription="@null" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="You did it! 🎉"
+                android:textColor="#00838A"
+                android:fontFamily="@font/baloo2"
+                android:textStyle="bold"
+                android:textSize="24sp" />
+
+            <TextView
+                android:id="@+id/txtWinMoves"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textColor="#607D8B"
+                android:fontFamily="@font/baloo2"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/btnPlayAgain"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="22dp"
+                android:background="@drawable/bg_memory_card_back"
+                android:gravity="center"
+                android:text="Play Again"
+                android:textColor="#FFFFFF"
+                android:fontFamily="@font/baloo2"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:clickable="true"
+                android:focusable="true" />
+
+            <TextView
+                android:id="@+id/btnBackToGames"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:text="Back to Games"
+                android:textColor="#00838A"
+                android:fontFamily="@font/baloo2"
+                android:textStyle="bold"
+                android:textSize="15sp"
+                android:clickable="true"
+                android:focusable="true" />
+        </LinearLayout>
+    </FrameLayout>
+
+</FrameLayout>

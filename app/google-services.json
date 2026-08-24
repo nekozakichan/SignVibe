@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "246850052600",
+    "project_id": "signvibe-3b784",
+    "storage_bucket": "signvibe-3b784.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:246850052600:android:b8d62da8c13760913bf60d",
+        "android_client_info": {
+          "package_name": "com.example.signvibe_application"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB2L0tUCIz7yjhlZAI7HYj9K6dXOsdj44E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:246850052600:android:60f9fe94a3fc62b83bf60d",
+        "android_client_info": {
+          "package_name": "com.ucucite.signvibe"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB2L0tUCIz7yjhlZAI7HYj9K6dXOsdj44E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
