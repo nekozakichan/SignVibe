@@ -152,4 +152,19 @@
 
     <!--Leaderboard-->
     <string name="profile_flappy_best_fmt">Your best: %1$d</string>
+
+
+    <!-- Word detection -->
+    <string name="word_loading">Loading…</string>
+    <string name="word_instruction">Stand back so your hands and upper body are in view. Press Start, then sign after 3·2·1.</string>
+    <string name="word_start">Start</string>
+    <string name="word_sign_again">Sign Again</string>
+    <string name="word_sign_now">Sign now!</string>
+    <string name="word_reading">Reading the sign…</string>
+    <string name="word_not_captured">Didn\'t catch that. Keep your hands and upper body in view, then try again.</string>
+    <string name="word_unsure">Not sure — try signing a little slower.</string>
+    <string name="word_model_error">Could not load the word model.</string>
+    <string name="word_hear">🔊 Hear it</string>
+    <string name="word_flip">Flip</string>
+    <string name="word_permission_denied">Camera permission is needed to read signs.</string>
 </resources>

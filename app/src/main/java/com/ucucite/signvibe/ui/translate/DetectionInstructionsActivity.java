@@ -55,6 +55,9 @@ public class DetectionInstructionsActivity extends AppCompatActivity {
             Intent intent = new Intent(this, DetectionCameraActivity.class);
             intent.putExtra(DetectionCameraActivity.EXTRA_TYPE, type);
             startActivity(intent);
+        } else if (type.equals("word")) {
+            // Dynamic words use the deliberate-capture flow (Pose + Hand + sequence model).
+            startActivity(new Intent(this, WordDetectionActivity.class));
         } else {
             Toast.makeText(this, getString(R.string.coming_soon_category), Toast.LENGTH_SHORT).show();
         }

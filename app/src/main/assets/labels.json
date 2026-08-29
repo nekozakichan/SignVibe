@@ -1,0 +1,66 @@
+{
+  "0": {
+    "label": "angry",
+    "display": "Angry"
+  },
+  "1": {
+    "label": "goodbye",
+    "display": "Goodbye"
+  },
+  "2": {
+    "label": "goodevening",
+    "display": "Good evening"
+  },
+  "3": {
+    "label": "goodmorning",
+    "display": "Good morning"
+  },
+  "4": {
+    "label": "happy",
+    "display": "Happy"
+  },
+  "5": {
+    "label": "hello",
+    "display": "Hello"
+  },
+  "6": {
+    "label": "how_are_you",
+    "display": "How are you"
+  },
+  "7": {
+    "label": "im_fine",
+    "display": "I'm fine"
+  },
+  "8": {
+    "label": "nice_to_meet_you",
+    "display": "Nice to meet you"
+  },
+  "9": {
+    "label": "no",
+    "display": "No"
+  },
+  "10": {
+    "label": "please",
+    "display": "Please"
+  },
+  "11": {
+    "label": "sad",
+    "display": "Sad"
+  },
+  "12": {
+    "label": "sorry",
+    "display": "Sorry"
+  },
+  "13": {
+    "label": "thankyou",
+    "display": "Thank you"
+  },
+  "14": {
+    "label": "welcome",
+    "display": "Welcome"
+  },
+  "15": {
+    "label": "yes",
+    "display": "Yes"
+  }
+}

@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000">
+
+    <androidx.camera.view.PreviewView
+        android:id="@+id/previewView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <!-- ── Top bar ─────────────────────────────────────────────── -->
+    <ImageView
+        android:id="@+id/btnBack"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="44dp"
+        android:layout_marginStart="20dp"
+        android:background="@drawable/bg_circle_btn_dark"
+        android:src="@drawable/ic_chevron_left_white"
+        android:padding="9dp"
+        android:contentDescription="@null"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/txtTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_title_pill_dark"
+        android:paddingHorizontal="18dp"
+        android:paddingVertical="9dp"
+        android:fontFamily="@font/baloo2"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:textSize="15sp"
+        android:text="@string/translate_word_title"
+        app:layout_constraintTop_toTopOf="@id/btnBack"
+        app:layout_constraintBottom_toBottomOf="@id/btnBack"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <ImageView
+        android:id="@+id/btnFlip"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="20dp"
+        android:background="@drawable/bg_circle_btn_dark"
+        android:src="@drawable/ic_flip_camera"
+        android:padding="10dp"
+        android:contentDescription="@null"
+        app:layout_constraintTop_toTopOf="@id/btnBack"
+        app:layout_constraintBottom_toBottomOf="@id/btnBack"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- ── Scan frame (body framing guide) ─────────────────────── -->
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideScanTop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.20" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideScanBottom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.62" />
+
+    <!-- REC pill -->
+    <TextView
+        android:id="@+id/recPill"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/bg_title_pill_dark"
+        android:paddingHorizontal="14dp"
+        android:paddingVertical="6dp"
+        android:fontFamily="@font/baloo2"
+        android:textStyle="bold"
+        android:textColor="#FF5A5A"
+        android:textSize="13sp"
+        android:text="● REC"
+        android:visibility="gone"
+        tools:ignore="HardcodedText"
+        app:layout_constraintTop_toTopOf="@id/guideScanTop"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Countdown number -->
+    <TextView
+        android:id="@+id/txtCountdown"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/baloo2"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:textSize="96sp"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="@id/guideScanTop"
+        app:layout_constraintBottom_toBottomOf="@id/guideScanBottom"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Status pill (Loading / Sign now / Reading) -->
+    <TextView
+        android:id="@+id/txtStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_title_pill_dark"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="8dp"
+        android:fontFamily="@font/baloo2"
+        android:textColor="#B3FFFFFF"
+        android:textSize="14sp"
+        android:text="@string/word_loading"
+        app:layout_constraintTop_toTopOf="@id/guideScanTop"
+        app:layout_constraintBottom_toBottomOf="@id/guideScanBottom"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Permission denied -->
+    <TextView
+        android:id="@+id/txtPermissionDenied"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="40dp"
+        android:gravity="center"
+        android:fontFamily="@font/baloo2"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        android:lineSpacingExtra="4dp"
+        android:text="@string/word_permission_denied"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- ── Bottom panel ────────────────────────────────────────── -->
+    <LinearLayout
+        android:id="@+id/bottomPanel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_bottom_panel_dark"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:paddingHorizontal="20dp"
+        android:paddingTop="24dp"
+        android:paddingBottom="36dp"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <TextView
+            android:id="@+id/txtInstruction"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:fontFamily="@font/baloo2"
+            android:textColor="#B3FFFFFF"
+            android:textSize="13sp"
+            android:lineSpacingExtra="3dp"
+            android:text="@string/word_instruction"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/resultPanel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/txtResultWord"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/baloo2"
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                android:textSize="40sp"
+                tools:text="Thank you" />
+
+            <TextView
+                android:id="@+id/txtResultConfidence"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_confidence_badge"
+                android:paddingHorizontal="14dp"
+                android:paddingVertical="4dp"
+                android:fontFamily="@font/baloo2"
+                android:textStyle="bold"
+                android:textColor="@color/teal_gradient_top"
+                android:textSize="11sp"
+                tools:text="Confidence: 98%" />
+
+            <LinearLayout
+                android:id="@+id/btnSpeak"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/bg_speak_pill"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="10dp"
+                android:orientation="horizontal"
+                android:gravity="center">
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/ic_volume_up_teal"
+                    android:contentDescription="@null" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:text="@string/speak"
+                    android:textColor="@color/teal_gradient_top"
+                    android:fontFamily="@font/baloo2"
+                    android:textStyle="bold"
+                    android:textSize="13sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:indeterminateTint="@color/white"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/btnStart"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:layout_marginTop="18dp"
+            android:background="@drawable/bg_button_login"
+            android:enabled="false"
+            android:fontFamily="@font/baloo2"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:textSize="17sp"
+            android:text="@string/word_start" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
