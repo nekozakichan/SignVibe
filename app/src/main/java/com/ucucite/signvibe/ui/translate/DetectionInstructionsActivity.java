@@ -8,6 +8,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.ucucite.signvibe.R;
+import com.ucucite.signvibe.SignVibeToast;
 
 public class DetectionInstructionsActivity extends AppCompatActivity {
 
@@ -59,7 +60,7 @@ public class DetectionInstructionsActivity extends AppCompatActivity {
             // Dynamic words use the deliberate-capture flow (Pose + Hand + sequence model).
             startActivity(new Intent(this, WordDetectionActivity.class));
         } else {
-            Toast.makeText(this, getString(R.string.coming_soon_category), Toast.LENGTH_SHORT).show();
+            SignVibeToast.show(this, getString(R.string.coming_soon_category), Toast.LENGTH_SHORT);
         }
     }
 }

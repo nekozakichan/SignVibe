@@ -22,6 +22,7 @@ import androidx.media3.exoplayer.ExoPlayer;
 import androidx.media3.ui.PlayerView;
 
 import com.ucucite.signvibe.R;
+import com.ucucite.signvibe.SignVibeToast;
 import com.ucucite.signvibe.data.ProgressRepository;
 
 import java.util.Locale;
@@ -150,7 +151,7 @@ public class LessonDetailActivity extends AppCompatActivity {
             if (moduleId != null && lessonId != null) {
                 ProgressRepository.markLessonComplete(moduleId, lessonId);
             }
-            Toast.makeText(this, "Lesson marked as completed!", Toast.LENGTH_SHORT).show();
+            SignVibeToast.show(this, "Lesson marked as completed!", Toast.LENGTH_SHORT);
             finish();
         });
     }

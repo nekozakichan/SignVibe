@@ -24,6 +24,8 @@ import androidx.camera.core.resolutionselector.ResolutionSelector;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.core.content.ContextCompat;
 
+import com.ucucite.signvibe.SignVibeToast;
+
 import com.google.common.util.concurrent.ListenableFuture;
 import com.ucucite.signvibe.R;
 import com.ucucite.signvibe.ml.HolisticFeatureExtractor;
@@ -248,7 +250,7 @@ public class WordDetectionActivity extends AppCompatActivity {
                 cameraProvider = future.get();
                 bindCameraUseCases();
             } catch (Exception e) {
-                Toast.makeText(this, "Could not start camera", Toast.LENGTH_SHORT).show();
+                SignVibeToast.show(this, "Could not start camera", Toast.LENGTH_SHORT);
             }
         }, ContextCompat.getMainExecutor(this));
     }

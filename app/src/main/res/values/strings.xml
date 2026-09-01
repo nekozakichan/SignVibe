@@ -69,7 +69,7 @@
     <!-- Lesson list / detail -->
     <string name="no_lessons_yet">No lessons yet for this module.\nCheck back soon!</string>
     <string name="take_module_quiz">Take Module Quiz</string>
-    <string name="about_this_sign">About this sign</string>
+    <string name="about_this_sign">How to sign</string>
     <string name="mark_as_done">Mark as Done</string>
     <string name="video_not_uploaded">Video not yet uploaded</string>
     <string name="could_not_load_video">Could not load video</string>

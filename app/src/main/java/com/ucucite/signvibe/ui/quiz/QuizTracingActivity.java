@@ -17,6 +17,7 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.ucucite.signvibe.R;
+import com.ucucite.signvibe.SignVibeToast;
 import com.ucucite.signvibe.ui.learn.Lesson;
 
 import java.util.ArrayList;
@@ -133,9 +134,9 @@ public class QuizTracingActivity extends AppCompatActivity {
                     }
 
                     if (glyphs.isEmpty()) {
-                        Toast.makeText(this,
+                        SignVibeToast.show(this,
                                 "No lessons to build a quiz from yet.",
-                                Toast.LENGTH_SHORT).show();
+                                Toast.LENGTH_SHORT);
                         finish();
                         return;
                     }
@@ -146,8 +147,8 @@ public class QuizTracingActivity extends AppCompatActivity {
                 })
                 .addOnFailureListener(e -> {
                     if (isFinishing()) return;
-                    Toast.makeText(this, "Couldn't load the quiz. Try again.",
-                            Toast.LENGTH_SHORT).show();
+                    SignVibeToast.show(this, "Couldn't load the quiz. Try again.",
+                            Toast.LENGTH_SHORT);
                     finish();
                 });
     }
@@ -170,7 +171,7 @@ public class QuizTracingActivity extends AppCompatActivity {
     private void onNextTapped() {
         // Require at least an attempt before advancing.
         if (!tracingView.hasDrawn()) {
-            Toast.makeText(this, "Try tracing the letter first!", Toast.LENGTH_SHORT).show();
+            SignVibeToast.show(this, "Try tracing the letter first!", Toast.LENGTH_SHORT);
             return;
         }
 

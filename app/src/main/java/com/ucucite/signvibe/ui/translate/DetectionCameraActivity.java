@@ -24,6 +24,8 @@ import androidx.camera.core.resolutionselector.ResolutionSelector;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.core.content.ContextCompat;
 
+import com.ucucite.signvibe.SignVibeToast;
+
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.mediapipe.tasks.components.containers.NormalizedLandmark;
 import com.google.mediapipe.tasks.vision.handlandmarker.HandLandmarkerResult;
@@ -170,7 +172,7 @@ public class DetectionCameraActivity extends AppCompatActivity
                 cameraProvider = future.get();
                 bindCameraUseCases();
             } catch (Exception e) {
-                Toast.makeText(this, "Could not start camera", Toast.LENGTH_SHORT).show();
+                SignVibeToast.show(this, "Could not start camera", Toast.LENGTH_SHORT);
             }
         }, ContextCompat.getMainExecutor(this));
     }
@@ -287,7 +289,7 @@ public class DetectionCameraActivity extends AppCompatActivity
     @Override
     public void onError(@NonNull String message) {
         runOnUiThread(() ->
-                Toast.makeText(this, message, Toast.LENGTH_SHORT).show());
+                SignVibeToast.show(this, message, Toast.LENGTH_SHORT));
     }
 
     // ── Lifecycle ────────────────────────────────────────────

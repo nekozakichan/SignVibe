@@ -23,6 +23,7 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.ucucite.signvibe.R;
+import com.ucucite.signvibe.SignVibeToast;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -134,8 +135,8 @@ public class QuizChoiceActivity extends AppCompatActivity {
                     }
 
                     if (loaded.isEmpty()) {
-                        Toast.makeText(this, "No quiz questions yet for this module.",
-                                Toast.LENGTH_SHORT).show();
+                        SignVibeToast.show(this, "No quiz questions yet for this module.",
+                                Toast.LENGTH_SHORT);
                         finish();
                         return;
                     }
@@ -148,8 +149,8 @@ public class QuizChoiceActivity extends AppCompatActivity {
                 })
                 .addOnFailureListener(e -> {
                     if (isFinishing()) return;
-                    Toast.makeText(this, "Couldn't load the quiz. Try again.",
-                            Toast.LENGTH_SHORT).show();
+                    SignVibeToast.show(this, "Couldn't load the quiz. Try again.",
+                            Toast.LENGTH_SHORT);
                     finish();
                 });
     }

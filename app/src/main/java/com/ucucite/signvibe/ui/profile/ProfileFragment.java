@@ -11,6 +11,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ucucite.signvibe.SignVibeToast;
+
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -217,7 +219,7 @@ public class ProfileFragment extends Fragment {
         String uid = FirebaseAuth.getInstance().getUid();
         if (uid == null) return;
 
-        Toast.makeText(requireContext(), "Uploading photo…", Toast.LENGTH_SHORT).show();
+        SignVibeToast.show(requireContext(), "Uploading photo…");
 
         StorageReference ref = FirebaseStorage.getInstance()
                 .getReference()
@@ -255,15 +257,15 @@ public class ProfileFragment extends Fragment {
                             .addOnFailureListener(e -> {
                                 // Most likely PERMISSION_DENIED from Firestore security rules.
                                 Log.e(TAG, "Failed to save photo_url — photo won't persist", e);
-                                if (isAdded()) Toast.makeText(requireContext(),
+                                if (isAdded()) SignVibeToast.show(requireContext(),
                                         "Couldn't save photo. Please try again.",
-                                        Toast.LENGTH_LONG).show();
+                                        Toast.LENGTH_LONG);
                             });
                 })
                 .addOnFailureListener(e -> {
                     Log.e(TAG, "Photo upload failed", e);
-                    if (isAdded()) Toast.makeText(requireContext(),
-                            "Upload failed. Please try again.", Toast.LENGTH_SHORT).show();
+                    if (isAdded()) SignVibeToast.show(requireContext(),
+                            "Upload failed. Please try again.", Toast.LENGTH_SHORT);
                 });
     }
 
