@@ -62,6 +62,17 @@ public class FlappySignView extends SurfaceView implements SurfaceHolder.Callbac
     private float cloudX = 0;
     private Flash flash;
 
+    // ── Time-of-day sky: day → noon → night → day…, advanced by the score. ──
+    private static final int[] SKY_TOP  = {0xFF8ED7FF, 0xFF37A9E6, 0xFF0B2350}; // day, noon, night
+    private static final int[] SKY_BOT  = {0xFFC9F0FF, 0xFF9FE0FF, 0xFF223E6B};
+    private static final float[] SKY_DARK = {0f, 0f, 1f};   // "night amount" per phase
+    private static final int SCORE_PER_PHASE = 10;          // points to move one phase
+    private int lastSkyScore = -1;
+    private float nightFactor = 0f;                          // 0 = daylight, 1 = full night
+    private final float[] starX = new float[24];
+    private final float[] starY = new float[24];
+    private boolean starsReady = false;
+
     // Countdown fields
     private int countdown = 0;        // 3,2,1 → 0 means "go"
     private float countdownT = 0f;    // frames elapsed in the current number
@@ -127,8 +138,48 @@ public class FlappySignView extends SurfaceView implements SurfaceHolder.Callbac
         groundH = 70 * S; pipeW = 72 * S; birdX = 96 * S; birdR = 18 * S;
         if (state == READY) resetWorld();
         if (state == PLAYING) birdVy = 0; // kindness: don't insta-drop after a surface recreate
-        sky.setShader(new LinearGradient(0, 0, 0, H,
-                Color.parseColor("#8ed7ff"), Color.parseColor("#c9f0ff"), Shader.TileMode.CLAMP));
+
+        // Seed fixed star positions across the upper sky (drawn only at night).
+        for (int i = 0; i < starX.length; i++) {
+            starX[i] = rnd.nextFloat() * W;
+            starY[i] = rnd.nextFloat() * (H * 0.55f);
+        }
+        starsReady = true;
+
+        lastSkyScore = -1;   // force a rebuild at the new size
+        updateSky();
+    }
+
+    /** Blend two ARGB/RGB colors; result is fully opaque. */
+    private static int lerpColor(int a, int b, float t) {
+        int ar = (a >> 16) & 0xFF, ag = (a >> 8) & 0xFF, ab = a & 0xFF;
+        int br = (b >> 16) & 0xFF, bg = (b >> 8) & 0xFF, bb = b & 0xFF;
+        int r = Math.round(ar + (br - ar) * t);
+        int g = Math.round(ag + (bg - ag) * t);
+        int bl = Math.round(ab + (bb - ab) * t);
+        return 0xFF000000 | (r << 16) | (g << 8) | bl;
+    }
+
+    /**
+     * Rebuilds the sky gradient for the current score. The score maps onto a
+     * day → noon → night → day… cycle, blending smoothly between phases. Only
+     * called when the score (or size) changes, so it costs nothing per frame.
+     */
+    private void updateSky() {
+        if (H <= 0) return;
+        int phases = SKY_TOP.length;
+        int s = Math.max(0, score);
+        int band = s / SCORE_PER_PHASE;
+        int from = band % phases;
+        int to = (from + 1) % phases;
+        float t = (s % SCORE_PER_PHASE) / (float) SCORE_PER_PHASE;
+
+        int top = lerpColor(SKY_TOP[from], SKY_TOP[to], t);
+        int bot = lerpColor(SKY_BOT[from], SKY_BOT[to], t);
+        nightFactor = SKY_DARK[from] + (SKY_DARK[to] - SKY_DARK[from]) * t;
+
+        sky.setShader(new LinearGradient(0, 0, 0, H, top, bot, Shader.TileMode.CLAMP));
+        lastSkyScore = score;
     }
 
     @Override
@@ -186,6 +237,8 @@ public class FlappySignView extends SurfaceView implements SurfaceHolder.Callbac
     private void update(float dt) {
         cloudX -= 0.15f * S * dt;
         if (cloudX < -W) cloudX += W;
+
+        if (score != lastSkyScore) updateSky();   // advance the day/noon/night cycle
 
         if (state == READY) {
             idleT += dt;
@@ -303,7 +356,28 @@ public class FlappySignView extends SurfaceView implements SurfaceHolder.Callbac
     private void drawGame(Canvas c) {
         c.drawRect(0, 0, W, H, sky);
 
-        p.setColor(0xB3FFFFFF);
+        // Stars fade in as night falls.
+        if (nightFactor > 0.02f && starsReady) {
+            for (int i = 0; i < starX.length; i++) {
+                p.setColor(withAlpha(0xFFFFFF, nightFactor));
+                c.drawCircle(starX[i], starY[i], (i % 3 == 0 ? 2.2f : 1.4f) * S, p);
+            }
+        }
+
+        // Sun (day/noon) cross-fades into the moon (night) in the same spot.
+        float sunX = W * 0.80f, sunY = H * 0.16f, sunR = 24 * S;
+        float dayAmt = 1f - nightFactor;
+        if (dayAmt > 0.02f) {
+            p.setColor(withAlpha(0xFFE08A, dayAmt * 0.30f)); c.drawCircle(sunX, sunY, sunR * 1.7f, p); // glow
+            p.setColor(withAlpha(0xFFC93F, dayAmt));         c.drawCircle(sunX, sunY, sunR, p);         // sun
+        }
+        if (nightFactor > 0.02f) {
+            p.setColor(withAlpha(0xEDF2FF, nightFactor * 0.28f)); c.drawCircle(sunX, sunY, sunR * 1.6f, p); // glow
+            p.setColor(withAlpha(0xEDF2FF, nightFactor));         c.drawCircle(sunX, sunY, sunR, p);         // moon
+        }
+
+        // Clouds dim a little at night so the scene reads darker.
+        p.setColor(withAlpha(0xFFFFFF, 0.70f * (1f - 0.55f * nightFactor)));
         drawCloud(c, 80 * S + cloudX, 110 * S, 26 * S);
         drawCloud(c, 300 * S + cloudX, 90 * S, 20 * S);
         drawCloud(c, 180 * S + cloudX + W, 160 * S, 22 * S);
