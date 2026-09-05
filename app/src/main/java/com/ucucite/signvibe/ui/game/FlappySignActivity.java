@@ -1,8 +1,15 @@
 package com.ucucite.signvibe.ui.game;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.drawable.GradientDrawable;
+import android.media.AudioAttributes;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
+import android.os.VibratorManager;
 import android.view.Gravity;
 import android.widget.Button;
 import android.widget.GridLayout;
@@ -32,6 +39,16 @@ public class FlappySignActivity extends AppCompatActivity implements FlappySignV
     private TextView btnPause;
     private final List<TextView> tiles = new ArrayList<>();
 
+    // ── Vibration (short buzz on crash; toggleable & remembered across sessions) ──
+    private static final String PREFS = "flappy_sign_prefs";
+    private static final String KEY_VIBRATION = "vibration_enabled";
+    private static final String ICON_VIBRATION_ON = "📳";   // 📳
+    private static final String ICON_VIBRATION_OFF = "📴";  // 📴
+    private SharedPreferences prefs;
+    private Vibrator vibrator;
+    private boolean vibrationEnabled = true;
+    private TextView btnVibration;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +65,19 @@ public class FlappySignActivity extends AppCompatActivity implements FlappySignV
         // Find pause views
         overlayPause = findViewById(R.id.overlayPause);
         btnPause = findViewById(R.id.btnPause);
+
+        // Vibration setup: remember the player's on/off choice across sessions.
+        prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
+        vibrationEnabled = prefs.getBoolean(KEY_VIBRATION, true);
+        vibrator = resolveVibrator();
+        btnVibration = findViewById(R.id.btnVibration);
+        updateVibrationButton();
+        btnVibration.setOnClickListener(v -> {
+            vibrationEnabled = !vibrationEnabled;
+            prefs.edit().putBoolean(KEY_VIBRATION, vibrationEnabled).apply();
+            updateVibrationButton();
+            if (vibrationEnabled) vibrateCatch();   // soft confirmation tick when turning it on
+        });
 
         gameView.setListener(this);
         gameView.setFlyer(selectedFlyer);
@@ -139,6 +169,9 @@ public class FlappySignActivity extends AppCompatActivity implements FlappySignV
 
     @Override
     public void onGameOver(int score, int stars) {
+        // Short buzz the instant the flyer hits a pipe or the ground.
+        vibrateHit();
+
         runOnUiThread(() -> {
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < 3; i++) sb.append(i < stars ? "\u2B50" : "\u2606");
@@ -156,9 +189,70 @@ public class FlappySignActivity extends AppCompatActivity implements FlappySignV
     }
 
     @Override
+    public void onTargetCaught() {
+        // Soft tick when the flyer passes through the target sign's pipe.
+        vibrateCatch();
+    }
+
+    @Override
+    public void onPipePassed() {
+        // Lightest tick for clearing any other pipe.
+        vibratePass();
+    }
+
+    @Override
     protected void onPause() {
         super.onPause();
         if (gameView.isPlaying()) pauseGame();
+    }
+
+    private Vibrator resolveVibrator() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            VibratorManager vm = (VibratorManager) getSystemService(Context.VIBRATOR_MANAGER_SERVICE);
+            return vm != null ? vm.getDefaultVibrator() : null;
+        }
+        return (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+    }
+
+    /**
+     * Shared one-shot buzz, honoring the on/off toggle. Tagged as sonification
+     * feedback so it still plays in silent mode. On phones without amplitude
+     * control the amplitude is ignored, but the durations still make a crash
+     * feel firmer than a catch.
+     */
+    private void buzz(long durationMs, int amplitude) {
+        if (!vibrationEnabled || vibrator == null || !vibrator.hasVibrator()) return;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            VibrationEffect effect = VibrationEffect.createOneShot(durationMs, amplitude);
+            AudioAttributes attrs = new AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                    .build();
+            vibrator.vibrate(effect, attrs);
+        } else {
+            vibrator.vibrate(durationMs);
+        }
+    }
+
+    /** A short buzz when the flyer crashes. */
+    private void vibrateHit() {
+        buzz(70, 80);
+    }
+
+    /** A soft tick when the correct sign is caught. */
+    private void vibrateCatch() {
+        buzz(20, 50);
+    }
+
+    /** The lightest tick — every non-target pipe cleared. */
+    private void vibratePass() {
+        buzz(12, 45);
+    }
+
+    private void updateVibrationButton() {
+        if (btnVibration == null) return;
+        btnVibration.setText(vibrationEnabled ? ICON_VIBRATION_ON : ICON_VIBRATION_OFF);
+        btnVibration.setAlpha(vibrationEnabled ? 1f : 0.45f);
     }
 
     private GradientDrawable tileBg(boolean selected) {

@@ -30,6 +30,10 @@ public class FlappySignView extends SurfaceView implements SurfaceHolder.Callbac
 
     public interface GameListener {
         void onGameOver(int score, int stars);
+        /** Fired when the flyer passes through the pipe carrying the target sign. */
+        void onTargetCaught();
+        /** Fired when the flyer clears any pipe that is NOT the target sign. */
+        void onPipePassed();
     }
 
     private static final int READY = 0, PLAYING = 1, PAUSED = 2, OVER = 3;
@@ -219,11 +223,21 @@ public class FlappySignView extends SurfaceView implements SurfaceHolder.Callbac
             if (!pi.passed && pi.x + pipeW < birdX) {
                 pi.passed = true;
                 score += 1;
-                if (pi.label.equals(target)) {
+                boolean caughtTarget = pi.label.equals(target);
+                if (caughtTarget) {
                     score += 5;
                     burst(birdX, birdY);
                     flash = new Flash("\u2728 " + target + " +5");
                     target = pick();
+                }
+                // One haptic tick per pipe cleared: a firmer one for the target
+                // sign, a lighter one for every other pipe.
+                if (listener != null) {
+                    final boolean caught = caughtTarget;
+                    post(() -> {
+                        if (caught) listener.onTargetCaught();
+                        else listener.onPipePassed();
+                    });
                 }
                 speedLogical = Math.min(3.8f, 2.3f + score * 0.02f);
                 gapLogical = Math.max(150f, 175f - score * 0.4f);
