@@ -18,12 +18,18 @@ import androidx.media3.common.MediaItem;
 import androidx.media3.common.PlaybackException;
 import androidx.media3.common.Player;
 import androidx.media3.common.util.UnstableApi;
+import androidx.media3.datasource.DefaultHttpDataSource;
+import androidx.media3.datasource.cache.CacheDataSource;
+import androidx.media3.exoplayer.DefaultLoadControl;
 import androidx.media3.exoplayer.ExoPlayer;
+import androidx.media3.exoplayer.LoadControl;
+import androidx.media3.exoplayer.source.DefaultMediaSourceFactory;
 import androidx.media3.ui.PlayerView;
 
 import com.ucucite.signvibe.R;
 import com.ucucite.signvibe.SignVibeToast;
 import com.ucucite.signvibe.data.ProgressRepository;
+import com.ucucite.signvibe.ui.game.VideoCache;
 
 import java.util.Locale;
 
@@ -103,14 +109,28 @@ public class LessonDetailActivity extends AppCompatActivity {
 
         videoLoading.setVisibility(View.VISIBLE);
 
-        player = new ExoPlayer.Builder(this).build();
+        // Cache-backed source: the same short clips are used by the games and are
+        // shared across lessons, so a video watched (or prefetched from the lesson
+        // list) once plays from disk instead of re-downloading every time it opens.
+        CacheDataSource.Factory cacheFactory = new CacheDataSource.Factory()
+                .setCache(VideoCache.get(this))
+                .setUpstreamDataSourceFactory(new DefaultHttpDataSource.Factory())
+                .setFlags(CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR);
+
+        player = new ExoPlayer.Builder(this)
+                .setMediaSourceFactory(new DefaultMediaSourceFactory(cacheFactory))
+                .setLoadControl(fastStartLoadControl())
+                .build();
         playerView.setPlayer(player);
         player.setPlayWhenReady(true); //auto-starts since there's no play button now
 
         player.addListener(new Player.Listener() {
             @Override
             public void onPlaybackStateChanged(int playbackState) {
-                if (playbackState == Player.STATE_READY) {
+                if (playbackState == Player.STATE_BUFFERING) {
+                    // Still fetching bytes (common on weak signal) — keep the spinner up.
+                    videoLoading.setVisibility(View.VISIBLE);
+                } else if (playbackState == Player.STATE_READY) {
                     videoLoading.setVisibility(View.GONE);
                     playerView.setVisibility(View.VISIBLE);
                     videoEmptyState.setVisibility(View.GONE);
@@ -125,6 +145,21 @@ public class LessonDetailActivity extends AppCompatActivity {
 
         player.setMediaItem(MediaItem.fromUri(Uri.parse(videoUrl)));
         player.prepare();
+    }
+
+    /**
+     * Start playback as soon as a little is buffered instead of waiting for a big
+     * cushion. This is the key win on poor signal: the sign clip begins almost
+     * immediately rather than stalling on a long initial buffer.
+     */
+    private LoadControl fastStartLoadControl() {
+        return new DefaultLoadControl.Builder()
+                .setBufferDurationsMs(
+                        15000,  // min buffer
+                        30000,  // max buffer
+                        250,    // buffer needed to START (low = fast start)
+                        500)    // buffer needed to resume after a stall
+                .build();
     }
 
     private void showVideoState(int iconRes, String message) {

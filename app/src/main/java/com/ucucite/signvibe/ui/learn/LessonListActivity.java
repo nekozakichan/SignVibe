@@ -1,7 +1,9 @@
 package com.ucucite.signvibe.ui.learn;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -9,7 +11,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.OptIn;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.media3.common.util.UnstableApi;
+import androidx.media3.datasource.DataSpec;
+import androidx.media3.datasource.DefaultHttpDataSource;
+import androidx.media3.datasource.cache.CacheDataSource;
+import androidx.media3.datasource.cache.CacheWriter;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -19,6 +27,7 @@ import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.ucucite.signvibe.R;
 import com.ucucite.signvibe.data.ProgressRepository;
+import com.ucucite.signvibe.ui.game.VideoCache;
 import com.ucucite.signvibe.ui.quiz.QuizChoiceActivity;
 import com.ucucite.signvibe.ui.quiz.QuizTracingActivity;
 
@@ -29,6 +38,8 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class LessonListActivity extends AppCompatActivity {
 
@@ -49,6 +60,9 @@ public class LessonListActivity extends AppCompatActivity {
     private ListenerRegistration progressListener;
     private ListenerRegistration quizResultListener;
     private ListenerRegistration quizQuestionsListener;
+
+    // Background warmer for lesson clips, so tapping a lesson usually plays from disk.
+    private ExecutorService prefetchPool;
 
     private String moduleId;
     private String moduleTitle;
@@ -130,8 +144,42 @@ public class LessonListActivity extends AppCompatActivity {
                     Collections.sort(lessons, Comparator.comparingInt(Lesson::getOrder));
 
                     lastLessons = lessons;
+                    prefetchLessonVideos(lessons);
                     refreshLessons();
                 });
+    }
+
+    /**
+     * Warm the shared video cache for every lesson clip in this module, in the
+     * background, as soon as the list loads. By the time a learner taps a lesson
+     * the clip is usually already on disk, so it plays right away instead of
+     * downloading from scratch — the big win on slow or unstable connections.
+     * Clips already cached (e.g. from the games) are skipped automatically.
+     */
+    @OptIn(markerClass = UnstableApi.class)
+    private void prefetchLessonVideos(List<Lesson> lessons) {
+        if (lessons == null || lessons.isEmpty()) return;
+        if (prefetchPool == null || prefetchPool.isShutdown()) {
+            prefetchPool = Executors.newFixedThreadPool(2);
+        }
+
+        CacheDataSource.Factory factory = new CacheDataSource.Factory()
+                .setCache(VideoCache.get(this))
+                .setUpstreamDataSourceFactory(new DefaultHttpDataSource.Factory())
+                .setFlags(CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR);
+
+        for (Lesson lesson : lessons) {
+            final String url = lesson.getVideoUrl();
+            if (TextUtils.isEmpty(url)) continue;
+            prefetchPool.execute(() -> {
+                try {
+                    DataSpec spec = new DataSpec(Uri.parse(url));
+                    new CacheWriter(factory.createDataSource(), spec, null, null).cache();
+                } catch (Exception ignored) {
+                    // Offline or cancelled — the player still fetches on demand when opened.
+                }
+            });
+        }
     }
 
     private void listenToProgress() {
@@ -289,6 +337,7 @@ public class LessonListActivity extends AppCompatActivity {
         if (progressListener != null) { progressListener.remove(); progressListener = null; }
         if (quizResultListener != null) { quizResultListener.remove(); quizResultListener = null; }
         if (quizQuestionsListener != null) { quizQuestionsListener.remove(); quizQuestionsListener = null; }
+        if (prefetchPool != null) { prefetchPool.shutdownNow(); prefetchPool = null; }
     }
 
     private int dpToPx(int dp) {

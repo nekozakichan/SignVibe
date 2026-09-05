@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -56,6 +57,7 @@ public class ProfileFragment extends Fragment {
 
     private TextView txtLessonsFraction;
     private TextView txtProgressPercent;
+    private ProgressBar progressOverall;
     private TextView txtStars;
 
     private ImageView imgAvatar;
@@ -93,6 +95,7 @@ public class ProfileFragment extends Fragment {
 
         txtLessonsFraction = view.findViewById(R.id.txtLessonsFraction);
         txtProgressPercent = view.findViewById(R.id.txtProgressPercent);
+        progressOverall = view.findViewById(R.id.progressOverall);
         txtStars = view.findViewById(R.id.txtStars);   // may be null until added to layout — guarded below
         imgAvatar = view.findViewById(R.id.imgAvatar);
         imgAvatarPlaceholder = view.findViewById(R.id.imgAvatarPlaceholder);
@@ -316,13 +319,22 @@ public class ProfileFragment extends Fragment {
     private void refreshProgressDisplay() {
         // A lesson removed/unpublished shouldn't inflate the count past the total.
         int completed = Math.min(completedLessons, totalLessons);
+        int percent = totalLessons == 0 ? 0 : Math.round((completed / (float) totalLessons) * 100);
 
         if (txtLessonsFraction != null) {
             txtLessonsFraction.setText(String.format(Locale.US, "%d/%d", completed, totalLessons));
         }
         if (txtProgressPercent != null) {
-            int percent = totalLessons == 0 ? 0 : Math.round((completed / (float) totalLessons) * 100);
             txtProgressPercent.setText(String.format(Locale.US, "%d%%", percent));
+        }
+        if (progressOverall != null) {
+            progressOverall.setMax(100);
+            // Animate the fill on API 24+, fall back to an instant set below it.
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                progressOverall.setProgress(percent, true);
+            } else {
+                progressOverall.setProgress(percent);
+            }
         }
     }
 
