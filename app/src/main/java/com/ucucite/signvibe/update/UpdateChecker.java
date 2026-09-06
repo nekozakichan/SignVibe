@@ -179,10 +179,10 @@ public final class UpdateChecker {
     private static void promptUpdate(Activity activity, String version, String apkUrl, String notes) {
         if (activity.isFinishing()) return;
         StringBuilder msg = new StringBuilder("A new version (v" + version + ") is available.");
-        if (notes != null && !notes.trim().isEmpty()) {
-            String trimmed = notes.trim();
-            if (trimmed.length() > 300) trimmed = trimmed.substring(0, 300) + "…";
-            msg.append("\n\nWhat's new:\n").append(trimmed);
+        String clean = cleanNotes(notes);
+        if (!clean.isEmpty()) {
+            if (clean.length() > 300) clean = clean.substring(0, 300) + "…";
+            msg.append("\n\nWhat's new:\n").append(clean);
         }
         new AlertDialog.Builder(activity)
                 .setTitle("Update available")
@@ -191,6 +191,28 @@ public final class UpdateChecker {
                 .setNegativeButton("Later", null)
                 .setCancelable(true)
                 .show();
+    }
+
+    /**
+     * Trims GitHub's auto-generated release notes down to human-readable "what's
+     * new" text: drops blank lines, the "Full Changelog" line, and any line that
+     * contains a URL. Returns "" when nothing meaningful remains (then the dialog
+     * just shows the version line).
+     */
+    private static String cleanNotes(String notes) {
+        if (notes == null) return "";
+        StringBuilder sb = new StringBuilder();
+        for (String line : notes.split("\\n")) {
+            String t = line.trim();
+            if (t.isEmpty()) continue;
+            if (t.toLowerCase().contains("full changelog")) continue;
+            if (t.contains("http://") || t.contains("https://")) continue;
+            // Strip leading markdown bullet/heading markers for cleaner reading.
+            t = t.replaceAll("^[*#\\-\\s]+", "").trim();
+            if (t.isEmpty()) continue;
+            sb.append("• ").append(t).append("\n");
+        }
+        return sb.toString().trim();
     }
 
     private static void startUpdate(Activity activity, String apkUrl) {
