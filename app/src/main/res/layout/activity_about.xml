@@ -52,7 +52,7 @@
                 android:layout_width="88dp"
                 android:layout_height="88dp"
                 android:layout_gravity="center_horizontal"
-                android:src="@mipmap/ic_launcher"
+                android:src="@mipmap/signvibe_icon"
                 android:contentDescription="SignVibe logo" />
 
             <TextView

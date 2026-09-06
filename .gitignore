@@ -13,3 +13,9 @@
 .externalNativeBuild
 .cxx
 local.properties
+google-services.json
+
+
+release.jks
+keystore.b64.txt
+keystore.properties
