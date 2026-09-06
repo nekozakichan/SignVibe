@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!-- The update APK is downloaded to getExternalFilesDir(DIRECTORY_DOWNLOADS),
+         which maps to the app's external-files "Download/" folder. -->
+    <external-files-path
+        name="apk_updates"
+        path="Download/" />
+</paths>

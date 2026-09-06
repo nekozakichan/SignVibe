@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.ucucite.signvibe.R;
+import com.ucucite.signvibe.update.UpdateChecker;
 import com.ucucite.signvibe.ui.game.GameFragment;
 import com.ucucite.signvibe.ui.learn.LearnFragment;
 import com.ucucite.signvibe.ui.profile.ProfileFragment;
@@ -26,6 +27,8 @@ public class HomeActivity extends AppCompatActivity {
         // Default tab
         if (savedInstanceState == null) {
             showFragment(new LearnFragment());
+            // Quietly check GitHub Releases for a newer APK once per launch.
+            UpdateChecker.checkForUpdate(this);
         }
 
         bottomNav.setOnItemSelectedListener(item -> {

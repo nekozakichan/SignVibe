@@ -7,14 +7,36 @@ android {
     namespace = "com.ucucite.signvibe"
     compileSdk = 35
 
+    // Release signing is driven by environment variables set by the GitHub
+    // Actions workflow. Locally these are unset, so a normal debug build /
+    // Android Studio run is unaffected.
+    val keystoreFile = System.getenv("KEYSTORE_FILE")?.let { file(it) }
+
+    // Version comes from the CI (derived from the pushed tag) when present,
+    // otherwise falls back to sensible local defaults. VERSION_CODE uses the
+    // workflow run number so every release has a higher code than the last.
+    val ciVersionName = System.getenv("VERSION_NAME")
+    val ciVersionCode = System.getenv("VERSION_CODE")?.toIntOrNull()
+
     defaultConfig {
         applicationId = "com.ucucite.signvibe"
         minSdk = 24
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = ciVersionCode ?: 1
+        versionName = ciVersionName ?: "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    signingConfigs {
+        create("release") {
+            if (keystoreFile != null && keystoreFile.exists()) {
+                storeFile = keystoreFile
+                storePassword = System.getenv("KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("KEY_ALIAS")
+                keyPassword = System.getenv("KEY_PASSWORD")
+            }
+        }
     }
 
     buildTypes {
@@ -24,6 +46,11 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            // Only sign with the release key when the keystore is actually present
+            // (i.e. on CI). Local release builds fall back to the default behavior.
+            if (keystoreFile != null && keystoreFile.exists()) {
+                signingConfig = signingConfigs.getByName("release")
+            }
         }
     }
     compileOptions {

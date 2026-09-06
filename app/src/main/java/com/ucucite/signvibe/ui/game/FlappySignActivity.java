@@ -11,6 +11,7 @@ import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.os.VibratorManager;
 import android.view.Gravity;
+import android.view.View;
 import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.TextView;
@@ -32,10 +33,10 @@ public class FlappySignActivity extends AppCompatActivity implements FlappySignV
                     "\u270C\uFE0F", "\uD83D\uDC4D", "\uD83D\uDD90\uFE0F", "\u270A"};
 
     private FlappySignView gameView;
-    private android.view.View overlayStart, overlayOver;
+    private View overlayStart, overlayOver;
     private TextView flyerPreview, txtScore, txtStars, txtNewBest;
     private String selectedFlyer = FLYERS[0];
-    private android.view.View overlayPause;
+    private View overlayPause;
     private TextView btnPause;
     private final List<TextView> tiles = new ArrayList<>();
 
@@ -48,6 +49,10 @@ public class FlappySignActivity extends AppCompatActivity implements FlappySignV
     private Vibrator vibrator;
     private boolean vibrationEnabled = true;
     private TextView btnVibration;
+
+    // ── Rate limiting for vibrations ──
+    private long lastVibrationTime = 0;
+    private static final long MIN_VIBRATION_INTERVAL = 50; // milliseconds
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -129,7 +134,8 @@ public class FlappySignActivity extends AppCompatActivity implements FlappySignV
             t.setTextSize(24);
             t.setGravity(Gravity.CENTER);
             GridLayout.LayoutParams lp = new GridLayout.LayoutParams();
-            lp.width = dp(52); lp.height = dp(52);
+            lp.width = dp(52);
+            lp.height = dp(52);
             lp.setMargins(dp(5), dp(5), dp(5), dp(5));
             t.setLayoutParams(lp);
             t.setBackground(tileBg(e.equals(selectedFlyer)));
@@ -148,28 +154,35 @@ public class FlappySignActivity extends AppCompatActivity implements FlappySignV
     }
 
     private void startGame() {
-        overlayStart.setVisibility(android.view.View.GONE);
-        overlayOver.setVisibility(android.view.View.GONE);
-        overlayPause.setVisibility(android.view.View.GONE);
-        btnPause.setVisibility(android.view.View.VISIBLE);
+        overlayStart.setVisibility(View.GONE);
+        overlayOver.setVisibility(View.GONE);
+        overlayPause.setVisibility(View.GONE);
+        btnPause.setVisibility(View.VISIBLE);
         gameView.startGame();
     }
 
     private void pauseGame() {
         gameView.pauseGame();
-        overlayPause.setVisibility(android.view.View.VISIBLE);
-        btnPause.setVisibility(android.view.View.GONE);
+        overlayPause.setVisibility(View.VISIBLE);
+        btnPause.setVisibility(View.GONE);
     }
 
     private void resumeGame() {
-        overlayPause.setVisibility(android.view.View.GONE);
-        btnPause.setVisibility(android.view.View.VISIBLE);
+        overlayPause.setVisibility(View.GONE);
+        btnPause.setVisibility(View.VISIBLE);
         gameView.resumeGame(); // starts the 3-2-1 countdown in the view
     }
 
     @Override
     public void onGameOver(int score, int stars) {
-        // Short buzz the instant the flyer hits a pipe or the ground.
+        // Cancel any ongoing vibration first, then play the hit vibration
+        if (vibrator != null) {
+            try {
+                vibrator.cancel();
+            } catch (Exception e) {
+                // Ignore
+            }
+        }
         vibrateHit();
 
         runOnUiThread(() -> {
@@ -177,25 +190,37 @@ public class FlappySignActivity extends AppCompatActivity implements FlappySignV
             for (int i = 0; i < 3; i++) sb.append(i < stars ? "\u2B50" : "\u2606");
             txtStars.setText(sb.toString());
             txtScore.setText("Score: " + score);
-            txtNewBest.setVisibility(android.view.View.GONE);
-            btnPause.setVisibility(android.view.View.GONE);
-            overlayOver.setVisibility(android.view.View.VISIBLE);
+            txtNewBest.setVisibility(View.GONE);
+            btnPause.setVisibility(View.GONE);
+            overlayOver.setVisibility(View.VISIBLE);
         });
 
         // Keep-best write to the leaderboard; only reveal the badge on a real PB.
         LeaderboardRepository.submitScore(score, (success, newBest) -> {
-            if (newBest) runOnUiThread(() -> txtNewBest.setVisibility(android.view.View.VISIBLE));
+            if (newBest) runOnUiThread(() -> txtNewBest.setVisibility(View.VISIBLE));
         });
     }
 
     @Override
     public void onTargetCaught() {
+        // Rate limit to prevent vibration spam
+        long now = System.currentTimeMillis();
+        if (now - lastVibrationTime < MIN_VIBRATION_INTERVAL) {
+            return;
+        }
+        lastVibrationTime = now;
         // Soft tick when the flyer passes through the target sign's pipe.
         vibrateCatch();
     }
 
     @Override
     public void onPipePassed() {
+        // Rate limit to prevent vibration spam
+        long now = System.currentTimeMillis();
+        if (now - lastVibrationTime < MIN_VIBRATION_INTERVAL) {
+            return;
+        }
+        lastVibrationTime = now;
         // Lightest tick for clearing any other pipe.
         vibratePass();
     }
@@ -206,12 +231,31 @@ public class FlappySignActivity extends AppCompatActivity implements FlappySignV
         if (gameView.isPlaying()) pauseGame();
     }
 
-    private Vibrator resolveVibrator() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            VibratorManager vm = (VibratorManager) getSystemService(Context.VIBRATOR_MANAGER_SERVICE);
-            return vm != null ? vm.getDefaultVibrator() : null;
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // Clean up vibration resources
+        if (vibrator != null) {
+            try {
+                vibrator.cancel();
+            } catch (Exception e) {
+                // Ignore
+            }
+            vibrator = null;
         }
-        return (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+    }
+
+    private Vibrator resolveVibrator() {
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                VibratorManager vm = (VibratorManager) getSystemService(Context.VIBRATOR_MANAGER_SERVICE);
+                return vm != null ? vm.getDefaultVibrator() : null;
+            }
+            return (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        } catch (Exception e) {
+            // Log error but don't crash
+            return null;
+        }
     }
 
     /**
@@ -221,16 +265,31 @@ public class FlappySignActivity extends AppCompatActivity implements FlappySignV
      * feel firmer than a catch.
      */
     private void buzz(long durationMs, int amplitude) {
-        if (!vibrationEnabled || vibrator == null || !vibrator.hasVibrator()) return;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            VibrationEffect effect = VibrationEffect.createOneShot(durationMs, amplitude);
-            AudioAttributes attrs = new AudioAttributes.Builder()
-                    .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
-                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                    .build();
-            vibrator.vibrate(effect, attrs);
-        } else {
-            vibrator.vibrate(durationMs);
+        if (!vibrationEnabled || vibrator == null || !vibrator.hasVibrator()) {
+            return;
+        }
+
+        // Cancel any ongoing vibration to prevent stacking
+        try {
+            vibrator.cancel();
+        } catch (Exception e) {
+            // Ignore
+        }
+
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                VibrationEffect effect = VibrationEffect.createOneShot(durationMs, amplitude);
+                AudioAttributes attrs = new AudioAttributes.Builder()
+                        .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
+                        .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                        .build();
+                vibrator.vibrate(effect, attrs);
+            } else {
+                vibrator.vibrate(durationMs);
+            }
+        } catch (Exception e) {
+            // Log error but don't crash the app
+            // e.printStackTrace();
         }
     }
 
