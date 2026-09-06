@@ -14,7 +14,9 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.FirebaseNetworkException;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthException;
 import com.ucucite.signvibe.R;
 import com.ucucite.signvibe.ui.home.HomeActivity;
 
@@ -89,12 +91,25 @@ public class LoginActivity extends AppCompatActivity {
                         startActivity(intent);
                         finish();
                     } else {
-                        String message = task.getException() != null
-                                ? task.getException().getMessage()
-                                : "Login failed. Please try again.";
-                        showError(message);
+                        showError(friendlyAuthError(task.getException()));
                     }
                 });
+    }
+
+    /** Turns raw Firebase auth errors into short, user-friendly messages. */
+    private String friendlyAuthError(Exception e) {
+        if (e instanceof FirebaseNetworkException) {
+            return "No internet connection. Please try again.";
+        }
+        if (e instanceof FirebaseAuthException) {
+            String code = ((FirebaseAuthException) e).getErrorCode();
+            if ("ERROR_USER_DISABLED".equals(code)) {
+                return "This account has been disabled.";
+            }
+            // Wrong email/password, unknown user, expired/invalid credential, etc.
+            return "Invalid credential";
+        }
+        return "Login failed. Please try again.";
     }
 
     private void setLoading(boolean loading) {
