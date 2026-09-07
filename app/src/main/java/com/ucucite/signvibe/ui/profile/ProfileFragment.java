@@ -37,6 +37,7 @@ import com.ucucite.signvibe.data.ProgressRepository;
 import com.ucucite.signvibe.data.StudentProfile;
 import com.ucucite.signvibe.ui.auth.LoginActivity;
 import com.ucucite.signvibe.ui.game.LeaderboardAdapter;
+import com.ucucite.signvibe.update.UpdateChecker;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -113,6 +114,8 @@ public class ProfileFragment extends Fragment {
         view.findViewById(R.id.rowHowTo).setOnClickListener(v ->
                 startActivity(new Intent(requireContext(), HowToUseActivity.class)));
 
+        setupCheckForUpdates(view);
+
         view.findViewById(R.id.cameraBadge).setOnClickListener(v ->
                 pickMedia.launch(new PickVisualMediaRequest.Builder()
                         .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
@@ -167,6 +170,28 @@ public class ProfileFragment extends Fragment {
                 txtLeaderboardEmpty.setVisibility(entries.isEmpty() ? View.VISIBLE : View.GONE);
             }
         });
+    }
+
+    private void setupCheckForUpdates(@NonNull View view) {
+        TextView txtVersion = view.findViewById(R.id.txtUpdateVersion);
+        if (txtVersion != null) {
+            String versionName = "1.0";
+            try {
+                versionName = requireContext().getPackageManager()
+                        .getPackageInfo(requireContext().getPackageName(), 0).versionName;
+            } catch (Exception ignored) { /* fall back to default */ }
+            txtVersion.setText("Version " + versionName);
+        }
+
+        View row = view.findViewById(R.id.rowCheckUpdate);
+        if (row != null) {
+            row.setOnClickListener(v -> {
+                if (!isAdded()) return;
+                SignVibeToast.show(requireContext(), "Checking for updates…");
+                // true = also tell the user when they're already up to date.
+                UpdateChecker.checkForUpdate(requireActivity(), true);
+            });
+        }
     }
 
     private void loadStudentProfile(@NonNull View rootView) {
