@@ -57,13 +57,25 @@ public class Lesson {
     public void setLocked(boolean locked) { this.locked = locked; }
 
     /**
-     * Matches Flutter's _shortLabel logic:
-     * "Letter A" -> "A", "Number 1" -> "1", "Say Hello" -> "Hello"
+     * The label shown on the lesson tile, its detail chip, and spoken by TTS.
+     *
+     * Only the alphabet/number tracing lessons collapse to a single glyph
+     * ("Letter A" -> "A", "Number 1" -> "1"), because those tiles show just the
+     * sign to trace. Every other lesson keeps its FULL title, so phrases stay
+     * whole ("Good Morning", "How are you?", "See you later") instead of being
+     * cut down to the last word.
      */
     public String getShortLabel() {
         String trimmed = title.trim();
         if (trimmed.isEmpty()) return title;
-        String[] parts = trimmed.split(" ");
-        return parts[parts.length - 1];
+
+        boolean isGlyphLesson =
+                trimmed.regionMatches(true, 0, "Letter ", 0, 7)
+                        || trimmed.regionMatches(true, 0, "Number ", 0, 7);
+        if (isGlyphLesson) {
+            String[] parts = trimmed.split("\\s+");
+            return parts[parts.length - 1];
+        }
+        return trimmed;
     }
 }
