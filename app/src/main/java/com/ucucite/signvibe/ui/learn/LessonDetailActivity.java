@@ -108,6 +108,11 @@ public class LessonDetailActivity extends AppCompatActivity {
         }
 
         videoLoading.setVisibility(View.VISIBLE);
+        // Keep the player attached and visible from the start. With a TextureView,
+        // a GONE view has no surface, so the first frame can't paint (audio plays
+        // but the screen stays black until a redraw). The spinner/empty-state
+        // overlays sit on top and cover it while it loads.
+        playerView.setVisibility(View.VISIBLE);
 
         // Cache-backed source: the same short clips are used by the games and are
         // shared across lessons, so a video watched (or prefetched from the lesson
@@ -131,10 +136,17 @@ public class LessonDetailActivity extends AppCompatActivity {
                     // Still fetching bytes (common on weak signal) — keep the spinner up.
                     videoLoading.setVisibility(View.VISIBLE);
                 } else if (playbackState == Player.STATE_READY) {
-                    videoLoading.setVisibility(View.GONE);
-                    playerView.setVisibility(View.VISIBLE);
+                    // Ready to play; the spinner is removed for real once a frame
+                    // actually paints (onRenderedFirstFrame). Hide the empty state now.
                     videoEmptyState.setVisibility(View.GONE);
                 }
+            }
+
+            @Override
+            public void onRenderedFirstFrame() {
+                // A video frame is now on screen — safe to remove the loader.
+                videoLoading.setVisibility(View.GONE);
+                videoEmptyState.setVisibility(View.GONE);
             }
 
             @Override

@@ -72,8 +72,7 @@
                     app:use_controller="false"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    app:surface_type="texture_view"
-                    android:visibility="gone" />
+                    app:surface_type="texture_view" />
 
                 <ProgressBar
                     android:id="@+id/videoLoading"
