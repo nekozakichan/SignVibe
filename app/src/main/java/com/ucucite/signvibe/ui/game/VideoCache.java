@@ -12,7 +12,9 @@ import java.io.File;
 public final class VideoCache {
 
     private static SimpleCache instance;
-    private static final long MAX_BYTES = 80L * 1024 * 1024; // 80 MB is plenty for short clips
+    // Large enough to hold every lesson clip so nothing gets evicted — this is
+    // what lets all lessons play offline once they've been prefetched online.
+    private static final long MAX_BYTES = 1024L * 1024 * 1024; // 1 GB
 
     private VideoCache() {}
 

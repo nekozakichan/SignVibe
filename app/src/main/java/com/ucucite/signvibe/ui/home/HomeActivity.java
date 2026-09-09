@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.ucucite.signvibe.R;
+import com.ucucite.signvibe.data.LessonPrefetcher;
 import com.ucucite.signvibe.update.UpdateChecker;
 import com.ucucite.signvibe.ui.game.GameFragment;
 import com.ucucite.signvibe.ui.learn.LearnFragment;
@@ -29,6 +30,8 @@ public class HomeActivity extends AppCompatActivity {
             showFragment(new LearnFragment());
             // Quietly check GitHub Releases for a newer APK once per launch.
             UpdateChecker.checkForUpdate(this);
+            // Warm the cache with all lesson videos so they can play offline later.
+            LessonPrefetcher.prefetchAll(this);
         }
 
         bottomNav.setOnItemSelectedListener(item -> {
