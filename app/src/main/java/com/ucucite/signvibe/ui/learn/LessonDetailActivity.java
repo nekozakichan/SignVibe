@@ -127,6 +127,7 @@ public class LessonDetailActivity extends AppCompatActivity {
                 .setLoadControl(fastStartLoadControl())
                 .build();
         playerView.setPlayer(player);
+        player.setVolume(0f); // mute lesson videos — they have background noise; signs are visual
         player.setPlayWhenReady(true); //auto-starts since there's no play button now
 
         player.addListener(new Player.Listener() {
