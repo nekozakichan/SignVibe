@@ -15,7 +15,12 @@ import androidx.annotation.OptIn;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.util.UnstableApi;
+import androidx.media3.datasource.DefaultHttpDataSource;
+import androidx.media3.datasource.cache.CacheDataSource;
+import androidx.media3.exoplayer.DefaultLoadControl;
 import androidx.media3.exoplayer.ExoPlayer;
+import androidx.media3.exoplayer.LoadControl;
+import androidx.media3.exoplayer.source.DefaultMediaSourceFactory;
 import androidx.media3.ui.PlayerView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -24,6 +29,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.ucucite.signvibe.R;
 import com.ucucite.signvibe.SignVibeToast;
+import com.ucucite.signvibe.ui.game.VideoCache;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -139,10 +145,28 @@ public class QuizChoiceActivity extends AppCompatActivity {
 
     @OptIn(markerClass = UnstableApi.class)
     private void setupPlayer() {
-        player = new ExoPlayer.Builder(this).build();
+        // Cache-backed source (shared with lessons/games) + fast-start buffering,
+        // so quiz clips load quickly and play from disk once cached/prefetched.
+        CacheDataSource.Factory cacheFactory = new CacheDataSource.Factory()
+                .setCache(VideoCache.get(this))
+                .setUpstreamDataSourceFactory(new DefaultHttpDataSource.Factory())
+                .setFlags(CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR);
+
+        player = new ExoPlayer.Builder(this)
+                .setMediaSourceFactory(new DefaultMediaSourceFactory(cacheFactory))
+                .setLoadControl(fastStartLoadControl())
+                .build();
         playerView.setPlayer(player);
         playerView.setUseController(false);
+        player.setVolume(0f); // mute — same clips as lessons; avoid background noise
         player.setPlayWhenReady(true);
+    }
+
+    /** Start playback after a tiny buffer instead of a big cushion (fast first paint). */
+    private LoadControl fastStartLoadControl() {
+        return new DefaultLoadControl.Builder()
+                .setBufferDurationsMs(15000, 30000, 250, 500)
+                .build();
     }
 
     private void loadQuestions() {

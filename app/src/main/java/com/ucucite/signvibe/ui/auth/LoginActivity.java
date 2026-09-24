@@ -18,6 +18,7 @@ import com.google.firebase.FirebaseNetworkException;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.ucucite.signvibe.R;
+import com.ucucite.signvibe.data.StudentGate;
 import com.ucucite.signvibe.ui.home.HomeActivity;
 
 public class LoginActivity extends AppCompatActivity {
@@ -83,16 +84,30 @@ public class LoginActivity extends AppCompatActivity {
 
         firebaseAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
-                    setLoading(false);
+                    if (!task.isSuccessful()) {
+                        setLoading(false);
+                        showError(friendlyAuthError(task.getException()));
+                        return;
+                    }
 
-                    if (task.isSuccessful()) {
+                    // Signing in proves who they are, not that they belong here.
+                    // Teacher and admin accounts live in the same Firebase Auth
+                    // pool, so check the role before opening the app.
+                    StudentGate.check((allowed, reason) -> {
+                        if (isFinishing()) return;
+                        setLoading(false);
+
+                        if (!allowed) {
+                            StudentGate.signOut();
+                            showError(reason != null ? reason : "This account can't use the app.");
+                            return;
+                        }
+
                         Intent intent = new Intent(this, HomeActivity.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intent);
                         finish();
-                    } else {
-                        showError(friendlyAuthError(task.getException()));
-                    }
+                    });
                 });
     }
 

@@ -13,8 +13,13 @@ android {
     val keystoreFile = System.getenv("KEYSTORE_FILE")?.let { file(it) }
 
     // Version comes from the CI (derived from the pushed tag) when present,
-    // otherwise falls back to sensible local defaults. VERSION_CODE uses the
+    // otherwise falls back to the local defaults below. VERSION_CODE uses the
     // workflow run number so every release has a higher code than the last.
+    //
+    // Keep LOCAL_VERSION_NAME in sync with your latest release tag so a build
+    // run from Android Studio (no tag) shows a sensible version in the app.
+    val localVersionName = "1.4"
+    val localVersionCode = 4
     val ciVersionName = System.getenv("VERSION_NAME")
     val ciVersionCode = System.getenv("VERSION_CODE")?.toIntOrNull()
 
@@ -22,8 +27,8 @@ android {
         applicationId = "com.ucucite.signvibe"
         minSdk = 24
         targetSdk = 35
-        versionCode = ciVersionCode ?: 1
-        versionName = ciVersionName ?: "1.0"
+        versionCode = ciVersionCode ?: localVersionCode
+        versionName = ciVersionName ?: localVersionName
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
