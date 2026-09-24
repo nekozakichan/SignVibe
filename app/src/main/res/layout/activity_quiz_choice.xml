@@ -90,7 +90,7 @@
             android:layout_height="match_parent"
             app:use_controller="false"
             app:surface_type="texture_view"
-            app:resize_mode="zoom" />
+            app:resize_mode="fit" />
 
         <ImageView
             android:id="@+id/btnReplay"
