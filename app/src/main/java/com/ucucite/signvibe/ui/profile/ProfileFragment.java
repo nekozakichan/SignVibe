@@ -173,14 +173,21 @@ public class ProfileFragment extends Fragment {
     }
 
     private void setupCheckForUpdates(@NonNull View view) {
+        String versionName = "1.0";
+        try {
+            versionName = requireContext().getPackageManager()
+                    .getPackageInfo(requireContext().getPackageName(), 0).versionName;
+        } catch (Exception ignored) { /* fall back to default */ }
+
         TextView txtVersion = view.findViewById(R.id.txtUpdateVersion);
         if (txtVersion != null) {
-            String versionName = "1.0";
-            try {
-                versionName = requireContext().getPackageManager()
-                        .getPackageInfo(requireContext().getPackageName(), 0).versionName;
-            } catch (Exception ignored) { /* fall back to default */ }
             txtVersion.setText("Version " + versionName);
+        }
+
+        // Footer line under Log Out — read the real installed version.
+        TextView txtAppVersion = view.findViewById(R.id.txtAppVersion);
+        if (txtAppVersion != null) {
+            txtAppVersion.setText("SignVibe v" + versionName);
         }
 
         View row = view.findViewById(R.id.rowCheckUpdate);
@@ -214,11 +221,8 @@ public class ProfileFragment extends Fragment {
                     StudentProfile profile = StudentProfile.fromFirestore(doc);
 
                     txtUserName.setText(profile.getDisplayName());
-                    txtGradeSection.setText(getString(
-                            R.string.profile_grade_section_fmt,
-                            gradeLevelAsInt(profile.getGradeLevel()),
-                            profile.getSection()
-                    ));
+                    // Show just the grade level (e.g. "Grade 1"), without the section name.
+                    txtGradeSection.setText("Grade " + gradeLevelAsInt(profile.getGradeLevel()));
 
                     String photoUrl = doc.getString("photo_url");
                     if (photoUrl != null && !photoUrl.isEmpty()) {
