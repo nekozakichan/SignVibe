@@ -60,6 +60,10 @@ public class QuizChoiceActivity extends AppCompatActivity {
     private String moduleId;
     private String moduleTitle;
 
+    /** Decides how many items this student answers. See QuizLimits. */
+    private String gradeLevel;
+    private QuizLimits quizLimits = QuizLimits.defaults();
+
     private final List<Question> questions = new ArrayList<>();
     private int currentIndex = 0;
     private int correctCount = 0;
@@ -93,7 +97,44 @@ public class QuizChoiceActivity extends AppCompatActivity {
         }
 
         setupPlayer();
-        loadQuestions();
+        loadLimitsThenQuestions();
+    }
+
+    /**
+     * Quiz length comes from settings/quiz_limits (shared with the web admin)
+     * combined with this student's grade. Both reads fall back to safe defaults
+     * rather than blocking the quiz.
+     */
+    private void loadLimitsThenQuestions() {
+        QuizLimitsRepository.load(limits -> {
+            if (isFinishing()) return;
+            quizLimits = limits;
+            loadGradeThenQuestions();
+        });
+    }
+
+    private void loadGradeThenQuestions() {
+        String uid = FirebaseAuth.getInstance().getUid();
+        if (uid == null) {
+            loadQuestions();
+            return;
+        }
+
+        FirebaseFirestore.getInstance()
+                .collection("users")
+                .document(uid)
+                .get()
+                .addOnSuccessListener(doc -> {
+                    if (isFinishing()) return;
+                    if (doc != null && doc.exists()) {
+                        gradeLevel = doc.getString("grade_level");
+                    }
+                    loadQuestions();
+                })
+                .addOnFailureListener(e -> {
+                    if (isFinishing()) return;
+                    loadQuestions();
+                });
     }
 
     @OptIn(markerClass = UnstableApi.class)
@@ -141,8 +182,10 @@ public class QuizChoiceActivity extends AppCompatActivity {
                         return;
                     }
 
+                    // Grade 1 sits 5 items, Grade 6 sits 20 — a random pick from
+                    // the module, kept in the teacher's order.
                     questions.clear();
-                    questions.addAll(loaded);
+                    questions.addAll(quizLimits.limitForGrade(loaded, gradeLevel));
                     currentIndex = 0;
                     correctCount = 0;
                     showCurrentQuestion();

@@ -4,62 +4,202 @@
     "display": "Angry"
   },
   "1": {
+    "label": "big",
+    "display": "Big"
+  },
+  "2": {
+    "label": "black",
+    "display": "Black"
+  },
+  "3": {
+    "label": "circle",
+    "display": "Circle"
+  },
+  "4": {
+    "label": "cold",
+    "display": "Cold"
+  },
+  "5": {
+    "label": "congratulation",
+    "display": "Congratulations"
+  },
+  "6": {
+    "label": "excuseme",
+    "display": "Excuse me"
+  },
+  "7": {
+    "label": "father",
+    "display": "Father"
+  },
+  "8": {
+    "label": "friday",
+    "display": "Friday"
+  },
+  "9": {
     "label": "goodbye",
     "display": "Goodbye"
   },
-  "2": {
+  "10": {
     "label": "goodevening",
     "display": "Good evening"
   },
-  "3": {
+  "11": {
     "label": "goodmorning",
     "display": "Good morning"
   },
-  "4": {
+  "12": {
     "label": "happy",
     "display": "Happy"
   },
-  "5": {
+  "13": {
     "label": "hello",
     "display": "Hello"
   },
-  "6": {
-    "label": "how_are_you",
+  "14": {
+    "label": "hot",
+    "display": "Hot"
+  },
+  "15": {
+    "label": "howareyou",
     "display": "How are you"
   },
-  "7": {
+  "16": {
+    "label": "hungry",
+    "display": "Hungry"
+  },
+  "17": {
+    "label": "iloveyou",
+    "display": "I love you"
+  },
+  "18": {
     "label": "im_fine",
     "display": "I'm fine"
   },
-  "8": {
-    "label": "nice_to_meet_you",
+  "19": {
+    "label": "imissyou",
+    "display": "I miss you"
+  },
+  "20": {
+    "label": "love",
+    "display": "Love"
+  },
+  "21": {
+    "label": "monday",
+    "display": "Monday"
+  },
+  "22": {
+    "label": "nicetomeetyou",
     "display": "Nice to meet you"
   },
-  "9": {
+  "23": {
     "label": "no",
     "display": "No"
   },
-  "10": {
+  "24": {
+    "label": "orange",
+    "display": "Orange"
+  },
+  "25": {
+    "label": "pink",
+    "display": "Pink"
+  },
+  "26": {
     "label": "please",
     "display": "Please"
   },
-  "11": {
+  "27": {
+    "label": "rectangle",
+    "display": "Rectangle"
+  },
+  "28": {
+    "label": "red",
+    "display": "Red"
+  },
+  "29": {
+    "label": "round",
+    "display": "Round"
+  },
+  "30": {
     "label": "sad",
     "display": "Sad"
   },
-  "12": {
+  "31": {
+    "label": "saturday",
+    "display": "Saturday"
+  },
+  "32": {
+    "label": "shy",
+    "display": "Shy"
+  },
+  "33": {
+    "label": "small",
+    "display": "Small"
+  },
+  "34": {
+    "label": "smile",
+    "display": "Smile"
+  },
+  "35": {
     "label": "sorry",
     "display": "Sorry"
   },
-  "13": {
+  "36": {
+    "label": "square",
+    "display": "Square"
+  },
+  "37": {
+    "label": "sunday",
+    "display": "Sunday"
+  },
+  "38": {
     "label": "thankyou",
     "display": "Thank you"
   },
-  "14": {
+  "39": {
+    "label": "thursday",
+    "display": "Thursday"
+  },
+  "40": {
+    "label": "triangle",
+    "display": "Triangle"
+  },
+  "41": {
+    "label": "tuesday",
+    "display": "Tuesday"
+  },
+  "42": {
+    "label": "wednesday",
+    "display": "Wednesday"
+  },
+  "43": {
     "label": "welcome",
     "display": "Welcome"
   },
-  "15": {
+  "44": {
+    "label": "whatswrong",
+    "display": "What's wrong"
+  },
+  "45": {
+    "label": "which",
+    "display": "Which"
+  },
+  "46": {
+    "label": "white",
+    "display": "White"
+  },
+  "47": {
+    "label": "who",
+    "display": "Who"
+  },
+  "48": {
+    "label": "why",
+    "display": "Why"
+  },
+  "49": {
+    "label": "yellow",
+    "display": "Yellow"
+  },
+  "50": {
     "label": "yes",
     "display": "Yes"
   }

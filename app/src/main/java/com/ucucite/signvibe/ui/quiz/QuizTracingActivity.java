@@ -54,6 +54,10 @@ public class QuizTracingActivity extends AppCompatActivity {
     private int currentIndex = 0;
     private int correctCount = 0;
 
+    /** Decides how many glyphs this student traces. See QuizLimits. */
+    private String gradeLevel;
+    private QuizLimits quizLimits = QuizLimits.defaults();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,7 +69,44 @@ public class QuizTracingActivity extends AppCompatActivity {
         bindViews();
         setupTts();
         setupClickListeners();
-        loadGlyphsFromLessons();
+        loadLimitsThenGlyphs();
+    }
+
+    /**
+     * Quiz length comes from settings/quiz_limits (shared with the web admin)
+     * combined with this student's grade. Both reads fall back to safe defaults
+     * rather than blocking the quiz.
+     */
+    private void loadLimitsThenGlyphs() {
+        QuizLimitsRepository.load(limits -> {
+            if (isFinishing()) return;
+            quizLimits = limits;
+            loadGradeThenGlyphs();
+        });
+    }
+
+    private void loadGradeThenGlyphs() {
+        String uid = FirebaseAuth.getInstance().getUid();
+        if (uid == null) {
+            loadGlyphsFromLessons();
+            return;
+        }
+
+        FirebaseFirestore.getInstance()
+                .collection("users")
+                .document(uid)
+                .get()
+                .addOnSuccessListener(doc -> {
+                    if (isFinishing()) return;
+                    if (doc != null && doc.exists()) {
+                        gradeLevel = doc.getString("grade_level");
+                    }
+                    loadGlyphsFromLessons();
+                })
+                .addOnFailureListener(e -> {
+                    if (isFinishing()) return;
+                    loadGlyphsFromLessons();
+                });
     }
 
     private void bindViews() {
@@ -125,13 +166,18 @@ public class QuizTracingActivity extends AppCompatActivity {
                     }
                     Collections.sort(lessons, Comparator.comparingInt(Lesson::getOrder));
 
-                    glyphs.clear();
+                    List<String> allGlyphs = new ArrayList<>();
                     for (Lesson l : lessons) {
                         String label = l.getShortLabel();
                         if (!TextUtils.isEmpty(label)) {
-                            glyphs.add(label);
+                            allGlyphs.add(label);
                         }
                     }
+
+                    // Grade 1 traces 5 glyphs, Grade 6 traces 20 — a random pick
+                    // from the module, kept in the lessons' order.
+                    glyphs.clear();
+                    glyphs.addAll(quizLimits.limitForGrade(allGlyphs, gradeLevel));
 
                     if (glyphs.isEmpty()) {
                         SignVibeToast.show(this,
