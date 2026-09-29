@@ -8,10 +8,15 @@ import com.google.firebase.firestore.FirebaseFirestore;
  * Reads settings/quiz_limits — the one document that decides how many items a
  * student answers, shared with the SignVibe web admin.
  *
- * Cached for the life of the process: the numbers change rarely, and a student
- * opening three quizzes in a row shouldn't cost three reads. Any failure falls
- * back to {@link QuizLimits#defaults()} so a quiz never fails to start because
- * a settings read didn't come back.
+ * Read fresh at the start of every quiz rather than cached for the life of the
+ * app. A teacher who changes the numbers expects the next quiz to use them, and
+ * a phone left running in a bag can keep an Android process alive for days —
+ * caching would have meant that student sitting the old length indefinitely.
+ * The cost is one small document read per quiz, which is nothing next to the
+ * lesson videos the app already streams.
+ *
+ * Any failure falls back to {@link QuizLimits#defaults()}, so a quiz never fails
+ * to start because a settings read didn't come back.
  */
 public final class QuizLimitsRepository {
 
@@ -22,29 +27,14 @@ public final class QuizLimitsRepository {
     private static final String COLLECTION = "settings";
     private static final String DOCUMENT = "quiz_limits";
 
-    private static QuizLimits cached;
-
     private QuizLimitsRepository() { /* no instances */ }
 
     public static void load(@NonNull Callback callback) {
-        if (cached != null) {
-            callback.onLoaded(cached);
-            return;
-        }
-
         FirebaseFirestore.getInstance()
                 .collection(COLLECTION)
                 .document(DOCUMENT)
                 .get()
-                .addOnSuccessListener(doc -> {
-                    cached = QuizLimits.fromSnapshot(doc);
-                    callback.onLoaded(cached);
-                })
+                .addOnSuccessListener(doc -> callback.onLoaded(QuizLimits.fromSnapshot(doc)))
                 .addOnFailureListener(e -> callback.onLoaded(QuizLimits.defaults()));
-    }
-
-    /** Drop the cache so the next load re-reads the document. */
-    public static void invalidate() {
-        cached = null;
     }
 }

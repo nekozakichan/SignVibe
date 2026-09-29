@@ -39,7 +39,10 @@ import com.ucucite.signvibe.ui.auth.LoginActivity;
 import com.ucucite.signvibe.ui.game.LeaderboardAdapter;
 import com.ucucite.signvibe.update.UpdateChecker;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -50,7 +53,7 @@ public class ProfileFragment extends Fragment {
 
     private ListenerRegistration lessonsListener;
     private ListenerRegistration progressListener;
-    private ListenerRegistration starsListener;
+    private ListenerRegistration quizResultsListener;   // feeds both the star total and My Quizzes
 
     private int totalLessons = 0;
     private int completedLessons = 0;
@@ -68,6 +71,14 @@ public class ProfileFragment extends Fragment {
     private LeaderboardAdapter leaderboardAdapter;
     private TextView txtMyBest;
     private TextView txtLeaderboardEmpty;
+
+    // My Quizzes
+    private QuizHistoryAdapter quizHistoryAdapter;
+    private TextView txtQuizSummary;
+    private View quizSummaryDivider;
+    private TextView txtQuizHistoryEmpty;
+    private List<QuizHistoryItem> lastQuizItems = new ArrayList<>();
+    private Map<String, String> moduleNames = new HashMap<>();   // moduleId -> display name
 
     private ActivityResultLauncher<PickVisualMediaRequest> pickMedia;
 
@@ -102,11 +113,13 @@ public class ProfileFragment extends Fragment {
         imgAvatarPlaceholder = view.findViewById(R.id.imgAvatarPlaceholder);
 
         setupLeaderboard(view);
+        setupQuizHistory(view);
 
         loadStudentProfile(view);
         listenToTotalLessons();
         listenToProgress();
-        listenToStars();
+        loadModuleNames();
+        listenToQuizResults();
 
         view.findViewById(R.id.rowAbout).setOnClickListener(v ->
                 startActivity(new Intent(requireContext(), AboutActivity.class)));
@@ -325,24 +338,116 @@ public class ProfileFragment extends Fragment {
         });
     }
 
-    /** Sums stars_earned across this student's quiz results. */
-    private void listenToStars() {
-        String uid = FirebaseAuth.getInstance().getUid();
-        if (uid == null) return;
+    private void setupQuizHistory(@NonNull View view) {
+        txtQuizSummary = view.findViewById(R.id.txtQuizSummary);
+        quizSummaryDivider = view.findViewById(R.id.quizSummaryDivider);
+        txtQuizHistoryEmpty = view.findViewById(R.id.txtQuizHistoryEmpty);
+        RecyclerView recycler = view.findViewById(R.id.recyclerQuizHistory);
+        if (recycler == null) return;   // guard if the section isn't in the layout yet
 
-        starsListener = FirebaseFirestore.getInstance()
+        quizHistoryAdapter = new QuizHistoryAdapter();
+        recycler.setLayoutManager(new LinearLayoutManager(requireContext()));
+        recycler.setAdapter(quizHistoryAdapter);
+    }
+
+    /**
+     * quiz_results only stores module_id, so read the module names once to show
+     * "Greetings & Expressions" rather than "greetings_&_expressions". Uses the
+     * same name -> id transform as LearnFragment / the web admin. If this read
+     * fails, the adapter falls back to a prettified module_id.
+     */
+    private void loadModuleNames() {
+        FirebaseFirestore.getInstance()
+                .collection("modules")
+                .get()
+                .addOnSuccessListener(snapshots -> {
+                    if (!isAdded() || snapshots == null) return;
+                    Map<String, String> names = new HashMap<>();
+                    for (QueryDocumentSnapshot doc : snapshots) {
+                        String name = doc.getString("name");
+                        if (name == null || name.isEmpty()) continue;
+                        names.put(name.toLowerCase().replaceAll("\\s", "_"), name);
+                    }
+                    moduleNames = names;
+                    refreshQuizHistory();
+                })
+                .addOnFailureListener(e -> Log.w(TAG, "Module names fetch failed", e));
+    }
+
+    /**
+     * One listener on this student's quiz_results drives both the Stars Earned
+     * total and the My Quizzes list. quiz_results is keep-best (one doc per
+     * module), so each row is the student's best attempt at that quiz.
+     */
+    private void listenToQuizResults() {
+        String uid = FirebaseAuth.getInstance().getUid();
+        if (uid == null) {
+            refreshQuizHistory();   // show the empty state instead of a blank card
+            return;
+        }
+
+        quizResultsListener = FirebaseFirestore.getInstance()
                 .collection("quiz_results")
                 .whereEqualTo("student_id", uid)
                 .addSnapshotListener((snapshots, error) -> {
-                    if (error != null || snapshots == null || !isAdded()) return;
+                    if (error != null) {
+                        Log.w(TAG, "quiz_results listener failed", error);
+                        return;
+                    }
+                    if (snapshots == null || !isAdded()) return;
+
                     int stars = 0;
+                    List<QuizHistoryItem> items = new ArrayList<>();
                     for (QueryDocumentSnapshot doc : snapshots) {
                         Long s = doc.getLong("stars_earned");
                         if (s != null) stars += s.intValue();
+
+                        QuizHistoryItem item = QuizHistoryItem.fromFirestore(doc);
+                        if (item != null) items.add(item);
                     }
+
+                    // Most recent first; a missing date sinks to the bottom.
+                    items.sort((a, b) -> {
+                        Date da = a.getCompletedAt();
+                        Date db = b.getCompletedAt();
+                        if (da == null && db == null) return 0;
+                        if (da == null) return 1;
+                        if (db == null) return -1;
+                        return db.compareTo(da);
+                    });
+
                     totalStars = stars;
                     refreshStarsDisplay();
+
+                    lastQuizItems = items;
+                    refreshQuizHistory();
                 });
+    }
+
+    private void refreshQuizHistory() {
+        if (!isAdded() || quizHistoryAdapter == null) return;
+
+        quizHistoryAdapter.submit(lastQuizItems, moduleNames);
+
+        int taken = lastQuizItems.size();
+        int passed = 0;
+        for (QuizHistoryItem item : lastQuizItems) {
+            if (item.isPassed()) passed++;
+        }
+
+        boolean empty = taken == 0;
+        if (txtQuizHistoryEmpty != null) {
+            txtQuizHistoryEmpty.setVisibility(empty ? View.VISIBLE : View.GONE);
+        }
+        if (quizSummaryDivider != null) {
+            quizSummaryDivider.setVisibility(empty ? View.GONE : View.VISIBLE);
+        }
+        if (txtQuizSummary != null) {
+            txtQuizSummary.setVisibility(empty ? View.GONE : View.VISIBLE);
+            String takenText = getResources().getQuantityString(
+                    R.plurals.quiz_history_taken, taken, taken);
+            txtQuizSummary.setText(getString(R.string.quiz_history_summary_fmt, takenText, passed));
+        }
     }
 
     private void refreshProgressDisplay() {
@@ -398,6 +503,10 @@ public class ProfileFragment extends Fragment {
         leaderboardAdapter = null;
         txtMyBest = null;
         txtLeaderboardEmpty = null;
+        quizHistoryAdapter = null;
+        txtQuizSummary = null;
+        quizSummaryDivider = null;
+        txtQuizHistoryEmpty = null;
         if (lessonsListener != null) {
             lessonsListener.remove();
             lessonsListener = null;
@@ -406,9 +515,9 @@ public class ProfileFragment extends Fragment {
             progressListener.remove();
             progressListener = null;
         }
-        if (starsListener != null) {
-            starsListener.remove();
-            starsListener = null;
+        if (quizResultsListener != null) {
+            quizResultsListener.remove();
+            quizResultsListener = null;
         }
     }
 }

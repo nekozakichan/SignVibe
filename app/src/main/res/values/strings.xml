@@ -153,6 +153,18 @@
     <!--Leaderboard-->
     <string name="profile_flappy_best_fmt">Your best: %1$d</string>
 
+    <!-- My Quizzes (Profile tab) -->
+    <string name="my_quizzes_title">📝 My Quizzes</string>
+    <plurals name="quiz_history_taken">
+        <item quantity="one">%d quiz taken</item>
+        <item quantity="other">%d quizzes taken</item>
+    </plurals>
+    <string name="quiz_history_summary_fmt">%1$s · %2$d passed</string>
+    <string name="quiz_history_empty">No quizzes yet. Finish a module\'s lessons to take its quiz! ✏️</string>
+    <string name="quiz_history_best_fmt">Best score · %1$s</string>
+    <string name="quiz_history_just_now">just now</string>
+    <string name="quiz_history_score_fmt">%1$d/%2$d · %3$d%%</string>
+
 
     <!-- Word detection -->
     <string name="word_loading">Loading…</string>
