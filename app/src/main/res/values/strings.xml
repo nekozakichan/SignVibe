@@ -24,6 +24,15 @@
     <string name="nav_translate">Translate</string>
     <string name="nav_game">Game</string>
     <string name="nav_profile">Profile</string>
+    <string name="nav_ai">AI</string>
+    <string name="ai_title">SignVibe AI</string>
+    <string name="ai_message_hint">Ask about a sign</string>
+    <string name="ai_attach_image">Attach image</string>
+    <string name="ai_send">Send</string>
+    <string name="ai_remove_image">Remove image</string>
+    <string name="ai_unavailable">SignVibe AI is unavailable right now.</string>
+    <string name="ai_image_error">Couldn\'t read that image.</string>
+    <string name="ai_clearer_photo">Try again with a clearer photo.</string>
 
     <!-- Learn tab -->
     <string name="learn_greeting">Hello, Learner! \uD83D\uDC4B</string>

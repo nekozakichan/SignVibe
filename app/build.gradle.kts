@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.ucucite.signvibe"
-    compileSdk = 35
+    compileSdk = 36
 
     // Release signing is driven by environment variables set by the GitHub
     // Actions workflow. Locally these are unset, so a normal debug build /
@@ -63,6 +63,10 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
     }
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     // Required so the .tflite / .task model files aren't corrupted by APK compression
     androidResources {
         noCompress += listOf("tflite", "task")
@@ -81,6 +85,8 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.storage)
+    implementation(libs.firebase.ai)
+    implementation(libs.guava)
 
     // Onboarding slider / Translate carousel
     implementation(libs.viewpager2)
