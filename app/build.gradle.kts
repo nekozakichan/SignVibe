@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.google.services)
@@ -5,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.ucucite.signvibe"
-    compileSdk = 35
+    compileSdk = 36
 
     // Release signing is driven by environment variables set by the GitHub
     // Actions workflow. Locally these are unset, so a normal debug build /
@@ -31,6 +33,22 @@ android {
         versionName = ciVersionName ?: localVersionName
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        val localProperties = Properties()
+        val localPropertiesFile = rootProject.file("local.properties")
+        if (localPropertiesFile.exists()) {
+            localPropertiesFile.inputStream().use { localProperties.load(it) }
+        }
+        buildConfigField(
+            "String",
+            "SUPABASE_AI_FUNCTION_URL",
+            "\"${localProperties.getProperty("supabase.aiFunctionUrl", "")}\""
+        )
+        buildConfigField(
+            "String",
+            "SUPABASE_ANON_KEY",
+            "\"${localProperties.getProperty("supabase.anonKey", "")}\""
+        )
     }
 
     signingConfigs {
@@ -61,6 +79,10 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 
     // Required so the .tflite / .task model files aren't corrupted by APK compression

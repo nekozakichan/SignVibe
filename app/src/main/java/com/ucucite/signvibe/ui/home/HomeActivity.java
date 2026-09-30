@@ -1,5 +1,6 @@
 package com.ucucite.signvibe.ui.home;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -8,6 +9,7 @@ import androidx.fragment.app.Fragment;
 import com.ucucite.signvibe.R;
 import com.ucucite.signvibe.data.LessonPrefetcher;
 import com.ucucite.signvibe.update.UpdateChecker;
+import com.ucucite.signvibe.ui.ai.AiChatActivity;
 import com.ucucite.signvibe.ui.game.GameFragment;
 import com.ucucite.signvibe.ui.learn.LearnFragment;
 import com.ucucite.signvibe.ui.profile.ProfileFragment;
@@ -46,6 +48,9 @@ public class HomeActivity extends AppCompatActivity {
             } else if (id == R.id.nav_game) {
                 showFragment(new GameFragment());
                 return true;
+            } else if (id == R.id.nav_ai) {
+                startActivity(new Intent(this, AiChatActivity.class));
+                return false;
             } else if (id == R.id.nav_profile) {
                 showFragment(new ProfileFragment());
                 return true;

@@ -40,6 +40,10 @@
             android:exported="false" />
 
         <activity
+            android:name=".ui.ai.AiChatActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".ui.learn.LessonListActivity"
             android:exported="false" />
 
