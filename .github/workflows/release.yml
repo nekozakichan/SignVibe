@@ -8,6 +8,8 @@ name: Release APK
 #   KEYSTORE_PASSWORD  - the keystore (store) password
 #   KEY_ALIAS          - the key alias inside the keystore
 #   KEY_PASSWORD       - the key (alias) password
+#   SUPABASE_AI_FUNCTION_URL - SignVibe AI function URL (same as supabase.aiFunctionUrl in local.properties)
+#   SUPABASE_ANON_KEY        - Supabase anon key (same as supabase.anonKey in local.properties)
 #
 # To create the base64 keystore secret on your machine:
 #   Windows PowerShell:  [Convert]::ToBase64String([IO.File]::ReadAllBytes("release.jks")) > keystore.b64.txt
@@ -52,7 +54,15 @@ jobs:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        run: ./gradlew assembleRelease --no-daemon
+          SUPABASE_AI_FUNCTION_URL: ${{ secrets.SUPABASE_AI_FUNCTION_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          # Fail the release instead of shipping an APK whose AI chat can't connect.
+          if [ -z "$SUPABASE_AI_FUNCTION_URL" ] || [ -z "$SUPABASE_ANON_KEY" ]; then
+            echo "::error::SUPABASE_AI_FUNCTION_URL / SUPABASE_ANON_KEY repo secrets are not set"
+            exit 1
+          fi
+          ./gradlew assembleRelease --no-daemon
 
       - name: Stage the APK under a friendly name
         run: |
