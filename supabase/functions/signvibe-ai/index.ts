@@ -25,7 +25,8 @@ Deno.serve(async (req) => {
   try {
     const apiKey = Deno.env.get("GEMINI_API_KEY");
     if (!apiKey) {
-      return json({ error: "Service unavailable" }, 503);
+      console.error("[signvibe-ai] GEMINI_API_KEY secret is not set");
+      return json({ error: "Service unavailable", reason: "missing_key" }, 503);
     }
 
     const body = await req.json();
@@ -66,7 +67,11 @@ Deno.serve(async (req) => {
     );
 
     if (!response.ok) {
-      return json({ error: "Service unavailable" }, 503);
+      // Full upstream error goes to the function logs only (Dashboard → Edge
+      // Functions → signvibe-ai → Logs); the app just gets a short reason code.
+      const detail = await response.text().catch(() => "");
+      console.error(`[signvibe-ai] upstream ${response.status}: ${detail.slice(0, 800)}`);
+      return json({ error: "Service unavailable", reason: `upstream_${response.status}` }, 503);
     }
 
     const result = await response.json();
@@ -77,12 +82,14 @@ Deno.serve(async (req) => {
         .trim() || "";
 
     if (!answer) {
-      return json({ error: "Service unavailable" }, 503);
+      console.error(`[signvibe-ai] empty answer: ${JSON.stringify(result).slice(0, 800)}`);
+      return json({ error: "Service unavailable", reason: "empty_answer" }, 503);
     }
 
     return json({ answer });
-  } catch (_error) {
-    return json({ error: "Service unavailable" }, 503);
+  } catch (error) {
+    console.error("[signvibe-ai] exception:", error);
+    return json({ error: "Service unavailable", reason: "exception" }, 503);
   }
 });
 

@@ -39,16 +39,22 @@ android {
         if (localPropertiesFile.exists()) {
             localPropertiesFile.inputStream().use { localProperties.load(it) }
         }
-        buildConfigField(
-            "String",
-            "SUPABASE_AI_FUNCTION_URL",
-            "\"${localProperties.getProperty("supabase.aiFunctionUrl", "")}\""
-        )
-        buildConfigField(
-            "String",
-            "SUPABASE_ANON_KEY",
-            "\"${localProperties.getProperty("supabase.anonKey", "")}\""
-        )
+        // SignVibe AI config. local.properties (git-ignored) is used for builds on
+        // your own machine; the GitHub Actions release build has no local.properties,
+        // so it falls back to the SUPABASE_AI_FUNCTION_URL / SUPABASE_ANON_KEY
+        // environment variables that release.yml passes in from repo secrets.
+        // Without this fallback CI builds shipped with an empty URL and the AI chat
+        // always said "unavailable".
+        val aiFunctionUrl = localProperties.getProperty("supabase.aiFunctionUrl")
+            ?.takeIf { it.isNotBlank() }
+            ?: System.getenv("SUPABASE_AI_FUNCTION_URL")
+            ?: ""
+        val supabaseAnonKey = localProperties.getProperty("supabase.anonKey")
+            ?.takeIf { it.isNotBlank() }
+            ?: System.getenv("SUPABASE_ANON_KEY")
+            ?: ""
+        buildConfigField("String", "SUPABASE_AI_FUNCTION_URL", "\"${aiFunctionUrl.trim()}\"")
+        buildConfigField("String", "SUPABASE_ANON_KEY", "\"${supabaseAnonKey.trim()}\"")
     }
 
     signingConfigs {
