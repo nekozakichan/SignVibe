@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.google.services)
@@ -31,6 +33,22 @@ android {
         versionName = ciVersionName ?: localVersionName
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        val localProperties = Properties()
+        val localPropertiesFile = rootProject.file("local.properties")
+        if (localPropertiesFile.exists()) {
+            localPropertiesFile.inputStream().use { localProperties.load(it) }
+        }
+        buildConfigField(
+            "String",
+            "SUPABASE_AI_FUNCTION_URL",
+            "\"${localProperties.getProperty("supabase.aiFunctionUrl", "")}\""
+        )
+        buildConfigField(
+            "String",
+            "SUPABASE_ANON_KEY",
+            "\"${localProperties.getProperty("supabase.anonKey", "")}\""
+        )
     }
 
     signingConfigs {
@@ -85,8 +103,6 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.storage)
-    implementation(libs.firebase.ai)
-    implementation(libs.guava)
 
     // Onboarding slider / Translate carousel
     implementation(libs.viewpager2)
