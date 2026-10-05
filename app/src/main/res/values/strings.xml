@@ -134,13 +134,13 @@
 
     <!-- quiz tracing -->
     <string name="quiz_tracing_title">Tracing Quiz</string>
-    <string name="quiz_tracing_instruction">Trace the letter with your finger</string>
+    <string name="quiz_tracing_instruction">Follow the arrows 1, 2, 3 to trace the letter</string>
     <string name="quiz_listen">Listen</string>
     <string name="quiz_clear">Clear</string>
     <string name="quiz_next">Next</string>
     <string name="quiz_finish">Finish</string>
 
-    <string name="quiz_tracing_instruction_number">Trace the number with your finger</string>
+    <string name="quiz_tracing_instruction_number">Follow the arrows 1, 2, 3 to trace the number</string>
     <string name="quiz_tracing_progress_fmt">%1$d of %2$d</string>
     <string name="quiz_result_pass_fmt">Great job! You passed — %1$d of %2$d correct (%3$d%%)</string>
     <string name="quiz_result_fail_fmt">Nice try! %1$d of %2$d correct (%3$d%%). Keep practicing!</string>
