@@ -176,4 +176,134 @@
 
     </LinearLayout>
 
+    <!-- ===== Answer feedback overlay =====
+         Correct: "Awesome!" + thumbs-up GIF + party-popper confetti (auto-closes).
+         Wrong:   "Oops, that is not correct" + oops video, then
+                  "The answer is ___" + the sign video + Ok. -->
+    <FrameLayout
+        android:id="@+id/feedbackOverlay"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#990B3B3E"
+        android:clickable="true"
+        android:focusable="true"
+        android:elevation="24dp"
+        android:visibility="gone"
+        tools:visibility="visible"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:id="@+id/feedbackCard"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginHorizontal="22dp"
+            android:layout_marginTop="96dp"
+            android:layout_marginBottom="36dp"
+            android:background="@drawable/bg_feedback_card"
+            android:elevation="6dp"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <TextView
+                android:id="@+id/txtFeedbackTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="28dp"
+                android:gravity="center"
+                android:fontFamily="@font/baloo2"
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                android:textSize="26sp"
+                tools:text="Awesome!" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <!-- Circle for the Awesome GIF or the Oops video. -->
+            <FrameLayout
+                android:id="@+id/feedbackCircle"
+                android:layout_width="250dp"
+                android:layout_height="250dp"
+                android:background="@drawable/bg_feedback_circle"
+                android:clipToOutline="true"
+                android:elevation="2dp">
+
+                <ImageView
+                    android:id="@+id/imgFeedbackGif"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="30dp"
+                    android:scaleType="fitCenter"
+                    android:contentDescription="@string/quiz_feedback_correct" />
+
+                <androidx.media3.ui.PlayerView
+                    android:id="@+id/feedbackCirclePlayer"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:visibility="gone"
+                    app:use_controller="false"
+                    app:surface_type="texture_view"
+                    app:resize_mode="zoom"
+                    app:shutter_background_color="@color/white" />
+
+            </FrameLayout>
+
+            <!-- Rounded frame for the correct-answer sign video. -->
+            <FrameLayout
+                android:id="@+id/feedbackAnswerCard"
+                android:layout_width="match_parent"
+                android:layout_height="240dp"
+                android:background="@drawable/bg_feedback_video"
+                android:clipToOutline="true"
+                android:elevation="2dp"
+                android:visibility="gone">
+
+                <androidx.media3.ui.PlayerView
+                    android:id="@+id/feedbackAnswerPlayer"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:use_controller="false"
+                    app:surface_type="texture_view"
+                    app:resize_mode="fit"
+                    app:shutter_background_color="@color/white" />
+
+            </FrameLayout>
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/btnFeedbackOk"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_feedback_ok"
+                android:elevation="2dp"
+                android:gravity="center"
+                android:paddingVertical="14dp"
+                android:text="@string/quiz_feedback_ok"
+                android:fontFamily="@font/baloo2"
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                android:textSize="19sp"
+                android:visibility="invisible" />
+
+        </LinearLayout>
+
+        <!-- Confetti floats over the card; it never takes touches. -->
+        <com.ucucite.signvibe.ui.quiz.ConfettiView
+            android:id="@+id/confettiView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:elevation="12dp" />
+
+    </FrameLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

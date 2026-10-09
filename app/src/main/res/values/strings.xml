@@ -149,6 +149,12 @@
     <string name="quiz_choice_title">Quiz</string>
     <string name="quiz_choice_prompt">Watch the sign, then tap the correct word</string>
 
+    <!-- Quiz answer feedback -->
+    <string name="quiz_feedback_correct">Awesome!</string>
+    <string name="quiz_feedback_wrong">Oops, that is not correct</string>
+    <string name="quiz_feedback_answer_fmt">The answer is %1$s</string>
+    <string name="quiz_feedback_ok">Ok</string>
+
 
     <!-- star -->
     <string name="quiz_result_perfect">Perfect! ⭐⭐⭐</string>

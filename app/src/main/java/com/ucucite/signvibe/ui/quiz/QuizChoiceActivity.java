@@ -1,20 +1,30 @@
 package com.ucucite.signvibe.ui.quiz;
 
+import android.content.Intent;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
 import android.view.View;
+import android.view.animation.OvershootInterpolator;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.content.Intent;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.OptIn;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.media3.common.MediaItem;
+import androidx.media3.common.PlaybackException;
+import androidx.media3.common.Player;
 import androidx.media3.common.util.UnstableApi;
+import androidx.media3.datasource.DefaultDataSource;
 import androidx.media3.datasource.DefaultHttpDataSource;
 import androidx.media3.datasource.cache.CacheDataSource;
 import androidx.media3.exoplayer.DefaultLoadControl;
@@ -23,6 +33,7 @@ import androidx.media3.exoplayer.LoadControl;
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory;
 import androidx.media3.ui.PlayerView;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -44,7 +55,11 @@ public class QuizChoiceActivity extends AppCompatActivity {
 
     private static final int PASS_PERCENTAGE = 70;
     private static final int POINTS_ON_PASS = 50;
-    private static final long FEEDBACK_DELAY_MS = 1100;
+
+    // Answer feedback timing.
+    private static final long ANSWER_FLASH_MS = 450;       // let the green/red button register first
+    private static final long CORRECT_FEEDBACK_MS = 2300;  // "Awesome!" closes itself after this
+    private static final long OOPS_FALLBACK_MS = 6000;     // if the oops clip can't play, don't get stuck
 
     private static class Question {
         final String videoUrl;
@@ -58,10 +73,31 @@ public class QuizChoiceActivity extends AppCompatActivity {
         }
     }
 
+    /** Which feedback screen is showing, if any. */
+    private enum FeedbackStep { NONE, CORRECT, OOPS, ANSWER }
+
     private PlayerView playerView;
     private ExoPlayer player;
     private TextView txtProgress;
     private final TextView[] choiceButtons = new TextView[4];
+
+    // Feedback overlay.
+    private View feedbackOverlay;
+    private View feedbackCard;
+    private View feedbackCircle;
+    private View feedbackAnswerCard;
+    private TextView txtFeedbackTitle;
+    private TextView btnFeedbackOk;
+    private ImageView imgFeedbackGif;
+    private PlayerView feedbackCirclePlayer;
+    private PlayerView feedbackAnswerPlayer;
+    private ConfettiView confettiView;
+    private ExoPlayer feedbackPlayer;            // plays the oops clip, then the answer's sign video
+    private FeedbackStep feedbackStep = FeedbackStep.NONE;
+    private Question feedbackQuestion;           // the question the wrong answer was for
+
+    private final Runnable advanceRunnable = this::closeFeedbackAndAdvance;
+    private final Runnable showAnswerRunnable = this::showAnswerStep;
 
     private String moduleId;
     private String moduleTitle;
@@ -102,8 +138,39 @@ public class QuizChoiceActivity extends AppCompatActivity {
             btn.setOnClickListener(v -> onChoiceTapped((TextView) v));
         }
 
+        bindFeedbackViews();
         setupPlayer();
         loadLimitsThenQuestions();
+    }
+
+    private void bindFeedbackViews() {
+        feedbackOverlay = findViewById(R.id.feedbackOverlay);
+        feedbackCard = findViewById(R.id.feedbackCard);
+        feedbackCircle = findViewById(R.id.feedbackCircle);
+        feedbackAnswerCard = findViewById(R.id.feedbackAnswerCard);
+        txtFeedbackTitle = findViewById(R.id.txtFeedbackTitle);
+        btnFeedbackOk = findViewById(R.id.btnFeedbackOk);
+        imgFeedbackGif = findViewById(R.id.imgFeedbackGif);
+        feedbackCirclePlayer = findViewById(R.id.feedbackCirclePlayer);
+        feedbackAnswerPlayer = findViewById(R.id.feedbackAnswerPlayer);
+        confettiView = findViewById(R.id.confettiView);
+
+        // Crop the video to the circle / rounded frame. Set in code because the
+        // android:clipToOutline XML attribute is ignored below Android 12.
+        feedbackCircle.setClipToOutline(true);
+        feedbackAnswerCard.setClipToOutline(true);
+
+        btnFeedbackOk.setOnClickListener(v -> closeFeedbackAndAdvance());
+
+        // Tapping the dimmed screen: skips "Awesome!", or jumps from the oops clip
+        // straight to the answer. The answer screen itself waits for Ok.
+        feedbackOverlay.setOnClickListener(v -> {
+            if (feedbackStep == FeedbackStep.CORRECT) {
+                closeFeedbackAndAdvance();
+            } else if (feedbackStep == FeedbackStep.OOPS) {
+                showAnswerStep();
+            }
+        });
     }
 
     /**
@@ -160,6 +227,44 @@ public class QuizChoiceActivity extends AppCompatActivity {
         playerView.setUseController(false);
         player.setVolume(0f); // mute — same clips as lessons; avoid background noise
         player.setPlayWhenReady(true);
+    }
+
+    /**
+     * Second player for the feedback screen. Its upstream also understands
+     * android.resource:// URIs, so it can play the bundled oops clip as well as
+     * the (already cached) sign video for the correct answer.
+     */
+    @OptIn(markerClass = UnstableApi.class)
+    private ExoPlayer feedbackPlayer() {
+        if (feedbackPlayer != null) return feedbackPlayer;
+
+        CacheDataSource.Factory cacheFactory = new CacheDataSource.Factory()
+                .setCache(VideoCache.get(this))
+                .setUpstreamDataSourceFactory(
+                        new DefaultDataSource.Factory(this, new DefaultHttpDataSource.Factory()))
+                .setFlags(CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR);
+
+        feedbackPlayer = new ExoPlayer.Builder(this)
+                .setMediaSourceFactory(new DefaultMediaSourceFactory(cacheFactory))
+                .setLoadControl(fastStartLoadControl())
+                .build();
+        feedbackPlayer.setVolume(0f);
+        feedbackPlayer.addListener(new Player.Listener() {
+            @Override
+            public void onPlaybackStateChanged(int state) {
+                // Oops clip finished -> show the correct answer.
+                if (state == Player.STATE_ENDED && feedbackStep == FeedbackStep.OOPS) {
+                    showAnswerStep();
+                }
+            }
+
+            @Override
+            public void onPlayerError(@NonNull PlaybackException error) {
+                // Never leave the student stuck on a broken clip.
+                if (feedbackStep == FeedbackStep.OOPS) showAnswerStep();
+            }
+        });
+        return feedbackPlayer;
     }
 
     /** Start playback after a tiny buffer instead of a big cushion (fast first paint). */
@@ -276,14 +381,177 @@ public class QuizChoiceActivity extends AppCompatActivity {
 
         handler.postDelayed(() -> {
             if (isFinishing()) return;
-            if (currentIndex < questions.size() - 1) {
-                currentIndex++;
-                showCurrentQuestion();
+            if (isCorrect) {
+                showCorrectFeedback();
             } else {
-                finishQuiz();
+                showOopsFeedback(q);
             }
-        }, FEEDBACK_DELAY_MS);
+        }, ANSWER_FLASH_MS);
     }
+
+    // ===== Answer feedback =====
+
+    /** "Awesome!" + thumbs-up GIF + party-popper confetti, then on to the next question. */
+    private void showCorrectFeedback() {
+        feedbackStep = FeedbackStep.CORRECT;
+        if (player != null) player.pause();
+
+        txtFeedbackTitle.setText(R.string.quiz_feedback_correct);
+        feedbackCircle.setVisibility(View.VISIBLE);
+        imgFeedbackGif.setVisibility(View.VISIBLE);
+        feedbackCirclePlayer.setVisibility(View.GONE);
+        feedbackAnswerCard.setVisibility(View.GONE);
+        btnFeedbackOk.setVisibility(View.INVISIBLE);
+
+        Glide.with(this).asGif().load(R.raw.quiz_awesome).into(imgFeedbackGif);
+
+        showOverlay();
+        // Wait one layout pass so the card's corners are known, then pop the cones.
+        feedbackOverlay.post(this::burstConfetti);
+        handler.postDelayed(advanceRunnable, CORRECT_FEEDBACK_MS);
+    }
+
+    /** Two party-popper cones at the card's lower corners, firing up and inward. */
+    private void burstConfetti() {
+        if (feedbackStep != FeedbackStep.CORRECT || isFinishing()) return;
+        float density = getResources().getDisplayMetrics().density;
+        float inset = 30f * density;
+        float mouthY = feedbackCard.getBottom() - 70f * density;
+
+        confettiView.burstFromCone(feedbackCard.getLeft() + inset, mouthY, -62f, 70);
+        handler.postDelayed(() -> {
+            if (feedbackStep != FeedbackStep.CORRECT) return;
+            confettiView.burstFromCone(feedbackCard.getRight() - inset, mouthY, -118f, 70);
+        }, 140);
+    }
+
+    /** "Oops, that is not correct" + the oops clip; the correct answer follows. */
+    private void showOopsFeedback(Question q) {
+        feedbackStep = FeedbackStep.OOPS;
+        feedbackQuestion = q;
+        if (player != null) player.pause();
+
+        txtFeedbackTitle.setText(R.string.quiz_feedback_wrong);
+        feedbackCircle.setVisibility(View.VISIBLE);
+        imgFeedbackGif.setVisibility(View.GONE);
+        feedbackCirclePlayer.setVisibility(View.VISIBLE);
+        feedbackAnswerCard.setVisibility(View.GONE);
+        btnFeedbackOk.setVisibility(View.INVISIBLE);
+
+        ExoPlayer fp = feedbackPlayer();
+        feedbackAnswerPlayer.setPlayer(null);
+        feedbackCirclePlayer.setPlayer(fp);
+        fp.setRepeatMode(Player.REPEAT_MODE_OFF);
+        fp.setMediaItem(MediaItem.fromUri(rawUri(R.raw.quiz_oops_sorry)));
+        fp.prepare();
+        fp.play();
+
+        showOverlay();
+        handler.postDelayed(showAnswerRunnable, OOPS_FALLBACK_MS);
+    }
+
+    /** "The answer is ___" with that sign's video on loop, until the student taps Ok. */
+    private void showAnswerStep() {
+        if (feedbackStep != FeedbackStep.OOPS || feedbackQuestion == null) return;
+        handler.removeCallbacks(showAnswerRunnable);
+        feedbackStep = FeedbackStep.ANSWER;
+
+        String answer = feedbackQuestion.correctAnswer;
+        txtFeedbackTitle.setText(answerTitle(answer));
+
+        feedbackCircle.setVisibility(View.GONE);
+        feedbackCirclePlayer.setPlayer(null);
+
+        ExoPlayer fp = feedbackPlayer();
+        if (!TextUtils.isEmpty(feedbackQuestion.videoUrl)) {
+            feedbackAnswerCard.setVisibility(View.VISIBLE);
+            feedbackAnswerPlayer.setPlayer(fp);
+            fp.setRepeatMode(Player.REPEAT_MODE_ONE);
+            fp.setMediaItem(MediaItem.fromUri(Uri.parse(feedbackQuestion.videoUrl)));
+            fp.prepare();
+            fp.play();
+        } else {
+            fp.stop();
+            feedbackAnswerCard.setVisibility(View.GONE);
+        }
+
+        btnFeedbackOk.setVisibility(View.VISIBLE);
+
+        // Soft pop so the change from "Oops" to the answer is noticeable.
+        feedbackCard.setScaleX(0.94f);
+        feedbackCard.setScaleY(0.94f);
+        feedbackCard.animate().scaleX(1f).scaleY(1f).setDuration(260)
+                .setInterpolator(new OvershootInterpolator(1.6f)).start();
+    }
+
+    /** "The answer is " + the answer word in bold, light yellow. */
+    private CharSequence answerTitle(String answer) {
+        String full = getString(R.string.quiz_feedback_answer_fmt, answer);
+        SpannableStringBuilder sb = new SpannableStringBuilder(full);
+        int start = full.lastIndexOf(answer);
+        if (start >= 0) {
+            int end = start + answer.length();
+            sb.setSpan(new StyleSpan(Typeface.BOLD), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            sb.setSpan(new ForegroundColorSpan(0xFFFFF59D), start, end,
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+        return sb;
+    }
+
+    private void closeFeedbackAndAdvance() {
+        if (feedbackStep == FeedbackStep.NONE) return;
+        feedbackStep = FeedbackStep.NONE;
+        feedbackQuestion = null;
+        handler.removeCallbacks(advanceRunnable);
+        handler.removeCallbacks(showAnswerRunnable);
+
+        if (feedbackPlayer != null) {
+            feedbackPlayer.stop();
+            feedbackPlayer.clearMediaItems();
+        }
+        feedbackCirclePlayer.setPlayer(null);
+        feedbackAnswerPlayer.setPlayer(null);
+        confettiView.clear();
+        Glide.with(this).clear(imgFeedbackGif);
+
+        hideOverlay(this::goToNextQuestion);
+    }
+
+    private void goToNextQuestion() {
+        if (isFinishing()) return;
+        if (currentIndex < questions.size() - 1) {
+            currentIndex++;
+            showCurrentQuestion();
+        } else {
+            finishQuiz();
+        }
+    }
+
+    private void showOverlay() {
+        feedbackOverlay.animate().cancel();
+        feedbackOverlay.setAlpha(0f);
+        feedbackOverlay.setVisibility(View.VISIBLE);
+        feedbackOverlay.animate().alpha(1f).setDuration(180).start();
+
+        feedbackCard.setScaleX(0.85f);
+        feedbackCard.setScaleY(0.85f);
+        feedbackCard.animate().scaleX(1f).scaleY(1f).setDuration(300)
+                .setInterpolator(new OvershootInterpolator(1.4f)).start();
+    }
+
+    private void hideOverlay(Runnable after) {
+        feedbackOverlay.animate().cancel();
+        feedbackOverlay.animate().alpha(0f).setDuration(160).withEndAction(() -> {
+            feedbackOverlay.setVisibility(View.GONE);
+            after.run();
+        }).start();
+    }
+
+    private Uri rawUri(int rawResId) {
+        return Uri.parse("android.resource://" + getPackageName() + "/" + rawResId);
+    }
+
+    // ===== Finish & save =====
 
     private void finishQuiz() {
         int total = questions.size();
@@ -328,7 +596,7 @@ public class QuizChoiceActivity extends AppCompatActivity {
                     data.put("percentage", percentage);
                     data.put("passed", passed);
                     data.put("stars_earned", stars);
-                    data.put("points_earned", passed ? 50 : 0);   // legacy, kept in sync
+                    data.put("points_earned", passed ? POINTS_ON_PASS : 0);   // legacy, kept in sync
                     data.put("completed_at", FieldValue.serverTimestamp());
 
                     db.collection("quiz_results").document(docId).set(data);
@@ -361,6 +629,20 @@ public class QuizChoiceActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         if (player != null) player.pause();
+        if (feedbackPlayer != null) feedbackPlayer.pause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Pick up where the student left off: the feedback clip if it was showing,
+        // otherwise the question's sign video.
+        if (feedbackStep == FeedbackStep.OOPS || feedbackStep == FeedbackStep.ANSWER) {
+            if (feedbackPlayer != null) feedbackPlayer.play();
+        } else if (feedbackStep == FeedbackStep.NONE && player != null
+                && player.getMediaItemCount() > 0) {
+            player.play();
+        }
     }
 
     @Override
@@ -370,6 +652,10 @@ public class QuizChoiceActivity extends AppCompatActivity {
         if (player != null) {
             player.release();
             player = null;
+        }
+        if (feedbackPlayer != null) {
+            feedbackPlayer.release();
+            feedbackPlayer = null;
         }
     }
 }
