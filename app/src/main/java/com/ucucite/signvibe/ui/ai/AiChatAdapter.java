@@ -9,6 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.ucucite.signvibe.R;
 
 import java.util.ArrayList;
@@ -40,8 +41,14 @@ public class AiChatAdapter extends RecyclerView.Adapter<AiChatAdapter.MessageVie
         if (holder.image != null) {
             if (message.imageUri != null) {
                 holder.image.setVisibility(View.VISIBLE);
-                holder.image.setImageURI(message.imageUri);
+                // Glide downsizes to the bubble and applies EXIF rotation, so a
+                // 12 MP camera photo shows upright and can't run the app out of memory.
+                Glide.with(holder.image)
+                        .load(message.imageUri)
+                        .centerCrop()
+                        .into(holder.image);
             } else {
+                Glide.with(holder.image).clear(holder.image);
                 holder.image.setVisibility(View.GONE);
             }
         }

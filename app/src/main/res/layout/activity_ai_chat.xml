@@ -50,10 +50,14 @@
         android:orientation="vertical"
         android:padding="12dp">
 
+        <!-- Photo preview. Hidden until a photo is picked, so it doesn't leave an
+             empty gap above the message box. -->
         <FrameLayout
+            android:id="@+id/previewFrame"
             android:layout_width="88dp"
             android:layout_height="88dp"
-            android:layout_marginBottom="8dp">
+            android:layout_marginBottom="8dp"
+            android:visibility="gone">
 
             <ImageView
                 android:id="@+id/imagePreview"
@@ -61,8 +65,7 @@
                 android:layout_height="match_parent"
                 android:background="@drawable/bg_ai_bubble"
                 android:contentDescription="@string/ai_attach_image"
-                android:scaleType="centerCrop"
-                android:visibility="gone" />
+                android:scaleType="centerCrop" />
 
             <TextView
                 android:id="@+id/removeImage"
@@ -75,8 +78,7 @@
                 android:text="X"
                 android:textColor="@color/white"
                 android:textSize="13sp"
-                android:textStyle="bold"
-                android:visibility="gone" />
+                android:textStyle="bold" />
         </FrameLayout>
 
         <LinearLayout

@@ -5,4 +5,10 @@
     <external-files-path
         name="apk_updates"
         path="Download/" />
+
+    <!-- SignVibe AI: photos taken with the camera are written here (getCacheDir()/camera)
+         so the camera app can save into them. Cleared each time the chat opens fresh. -->
+    <cache-path
+        name="camera_photos"
+        path="camera/" />
 </paths>
