@@ -39,6 +39,12 @@
     <string name="ai_choose_album_desc">Pick a photo you already have</string>
     <string name="ai_camera_permission">Allow camera access to take a photo of your hand.</string>
     <string name="ai_no_camera">Couldn\'t open the camera on this phone.</string>
+    <string name="ai_suggestions_title">What would you like help with?</string>
+    <string-array name="ai_suggestions">
+        <item>How do I sign \"Thank you\" in FSL?</item>
+        <item>How do I fingerspell my name?</item>
+        <item>What can you help with?</item>
+    </string-array>
 
     <!-- Learn tab -->
     <string name="learn_greeting">Hello, Learner! \uD83D\uDC4B</string>

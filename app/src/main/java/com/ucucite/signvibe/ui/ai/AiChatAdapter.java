@@ -1,5 +1,6 @@
 package com.ucucite.signvibe.ui.ai;
 
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,6 +39,8 @@ public class AiChatAdapter extends RecyclerView.Adapter<AiChatAdapter.MessageVie
     public void onBindViewHolder(@NonNull MessageViewHolder holder, int position) {
         AiChatMessage message = messages.get(position);
         holder.text.setText(message.text);
+        // Photo-only messages have no text — hide the bubble instead of showing an empty one.
+        holder.text.setVisibility(TextUtils.isEmpty(message.text) ? View.GONE : View.VISIBLE);
         if (holder.image != null) {
             if (message.imageUri != null) {
                 holder.image.setVisibility(View.VISIBLE);

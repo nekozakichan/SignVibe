@@ -35,6 +35,7 @@ import androidx.media3.ui.AspectRatioFrameLayout;
 import androidx.media3.ui.PlayerView;
 
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.ucucite.signvibe.data.ModuleVisibility;
 import com.ucucite.signvibe.R;
 
 import java.util.ArrayList;
@@ -145,6 +146,13 @@ public class MemoryGameActivity extends AppCompatActivity {
 
     private void fetchLessons() {
         loading.setVisibility(View.VISIBLE);
+        // Leave out lessons from modules a teacher has hidden (or archived), so
+        // the game never shows signs students can't see in the Learn tab.
+        ModuleVisibility.fetchUnavailableModuleIds(unavailable -> fetchLessons(unavailable));
+    }
+
+    private void fetchLessons(java.util.Set<String> unavailableModuleIds) {
+        if (isFinishing() || isDestroyed()) return;
         FirebaseFirestore.getInstance()
                 .collection("lessons")
                 .whereEqualTo("status", "published")
@@ -155,6 +163,7 @@ public class MemoryGameActivity extends AppCompatActivity {
                     // Dedupe by title; skip blanks and lessons with no video.
                     Map<String, String> byTitle = new LinkedHashMap<>();
                     snap.forEach(doc -> {
+                        if (unavailableModuleIds.contains(doc.getString("module_id"))) return;
                         String t = doc.getString("title");
                         String url = doc.getString("video_url");
                         if (t != null && !t.trim().isEmpty()

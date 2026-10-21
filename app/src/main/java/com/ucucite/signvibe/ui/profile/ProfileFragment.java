@@ -33,6 +33,7 @@ import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.ucucite.signvibe.R;
+import com.ucucite.signvibe.data.ModuleVisibility;
 import com.ucucite.signvibe.data.ProgressRepository;
 import com.ucucite.signvibe.data.StudentProfile;
 import com.ucucite.signvibe.ui.auth.LoginActivity;
@@ -53,10 +54,17 @@ public class ProfileFragment extends Fragment {
 
     private ListenerRegistration lessonsListener;
     private ListenerRegistration progressListener;
+    private ListenerRegistration modulesListener;       // which modules are hidden/archived
     private ListenerRegistration quizResultsListener;   // feeds both the star total and My Quizzes
 
     private int totalLessons = 0;
     private int completedLessons = 0;
+
+    // Raw inputs for the progress card; totals are recomputed from these so
+    // lessons in hidden or archived modules don't count (same as the Learn tab).
+    private Map<String, Integer> lessonCountsByModule = new HashMap<>();
+    private Map<String, Set<String>> completedByModuleLast = new HashMap<>();
+    private Set<String> unavailableModuleIds = new java.util.HashSet<>();
     private int totalStars = 0;
 
     private TextView txtLessonsFraction;
@@ -118,6 +126,7 @@ public class ProfileFragment extends Fragment {
         loadStudentProfile(view);
         listenToTotalLessons();
         listenToProgress();
+        listenToModuleVisibility();
         loadModuleNames();
         listenToQuizResults();
 
@@ -321,21 +330,50 @@ public class ProfileFragment extends Fragment {
                 .whereEqualTo("status", "published")
                 .addSnapshotListener((snapshots, error) -> {
                     if (error != null || snapshots == null || !isAdded()) return;
-                    totalLessons = snapshots.size();
-                    refreshProgressDisplay();
+                    Map<String, Integer> counts = new HashMap<>();
+                    for (QueryDocumentSnapshot doc : snapshots) {
+                        String moduleId = doc.getString("module_id");
+                        counts.merge(moduleId != null ? moduleId : "", 1, Integer::sum);
+                    }
+                    lessonCountsByModule = counts;
+                    recomputeProgressTotals();
                 });
     }
 
     private void listenToProgress() {
         progressListener = ProgressRepository.listenToCompletedLessons(completedByModule -> {
             if (!isAdded()) return;
-            int count = 0;
-            for (Set<String> lessonIds : completedByModule.values()) {
-                count += lessonIds.size();
-            }
-            completedLessons = count;
-            refreshProgressDisplay();
+            completedByModuleLast = completedByModule;
+            recomputeProgressTotals();
         });
+    }
+
+    private void listenToModuleVisibility() {
+        modulesListener = ModuleVisibility.listenToUnavailableModuleIds(ids -> {
+            if (!isAdded()) return;
+            unavailableModuleIds = ids;
+            recomputeProgressTotals();
+        });
+    }
+
+    /**
+     * Totals over the modules students can see. Completed lessons are capped
+     * per module by that module's published lesson count, like the Learn tab,
+     * so a removed lesson can't push progress past 100%.
+     */
+    private void recomputeProgressTotals() {
+        int total = 0;
+        int completed = 0;
+        for (Map.Entry<String, Integer> e : lessonCountsByModule.entrySet()) {
+            if (unavailableModuleIds.contains(e.getKey())) continue;
+            int moduleTotal = e.getValue();
+            Set<String> done = completedByModuleLast.get(e.getKey());
+            total += moduleTotal;
+            completed += Math.min(done != null ? done.size() : 0, moduleTotal);
+        }
+        totalLessons = total;
+        completedLessons = completed;
+        refreshProgressDisplay();
     }
 
     private void setupQuizHistory(@NonNull View view) {
@@ -514,6 +552,10 @@ public class ProfileFragment extends Fragment {
         if (progressListener != null) {
             progressListener.remove();
             progressListener = null;
+        }
+        if (modulesListener != null) {
+            modulesListener.remove();
+            modulesListener = null;
         }
         if (quizResultsListener != null) {
             quizResultsListener.remove();

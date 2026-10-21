@@ -19,6 +19,7 @@ import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.ucucite.signvibe.R;
+import com.ucucite.signvibe.data.ModuleVisibility;
 import com.ucucite.signvibe.data.ProgressRepository;
 import com.ucucite.signvibe.data.StudentProfile;
 
@@ -146,6 +147,9 @@ public class LearnFragment extends Fragment {
                     for (QueryDocumentSnapshot doc : snapshots) {
                         String status = doc.getString("status");
                         if ("archived".equals(status)) continue;  // hide archived, keep everything else
+                        // Hidden by a teacher in the web panel (visible: false). Modules
+                        // without the field are visible, so never filter this in the query.
+                        if (ModuleVisibility.isHidden(doc)) continue;
 
                         String name = doc.getString("name");
                         String description = doc.getString("description");

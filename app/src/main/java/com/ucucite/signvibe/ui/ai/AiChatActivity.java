@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -47,6 +48,7 @@ public class AiChatActivity extends AppCompatActivity {
     private SignVibeAiClient aiClient;
     private EditText inputMessage;
     private View previewFrame;
+    private View suggestionsPanel;
     private ImageView imagePreview;
     private TextView removeImage;
     private Uri selectedImageUri;
@@ -117,10 +119,45 @@ public class AiChatActivity extends AppCompatActivity {
         chatList.setLayoutManager(layoutManager);
         chatList.setAdapter(adapter);
 
+        suggestionsPanel = findViewById(R.id.suggestionsPanel);
+        setupSuggestions(chatList);
+
         findViewById(R.id.btnBack).setOnClickListener(v -> finish());
         attachButton.setOnClickListener(v -> showImageSourcePicker());
         removeImage.setOnClickListener(v -> clearSelectedImage());
         sendButton.setOnClickListener(v -> sendMessage(chatList));
+    }
+
+    /**
+     * Starter questions shown while the chat is empty, so a student who doesn't
+     * know what to ask has somewhere to begin. Tapping one sends it right away.
+     * The panel hides as soon as anything appears in the chat.
+     */
+    private void setupSuggestions(RecyclerView chatList) {
+        LinearLayout list = findViewById(R.id.suggestionList);
+        for (String question : getResources().getStringArray(R.array.ai_suggestions)) {
+            View row = getLayoutInflater().inflate(R.layout.item_ai_suggestion, list, false);
+            ((TextView) row.findViewById(R.id.txtSuggestion)).setText(question);
+            row.findViewById(R.id.suggestionRow).setOnClickListener(v -> {
+                inputMessage.setText(question);
+                sendMessage(chatList);
+            });
+            list.addView(row);
+        }
+
+        adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onItemRangeInserted(int positionStart, int itemCount) {
+                hideSuggestions();
+            }
+        });
+    }
+
+    private void hideSuggestions() {
+        if (suggestionsPanel.getVisibility() != View.VISIBLE) return;
+        suggestionsPanel.animate().alpha(0f).setDuration(150)
+                .withEndAction(() -> suggestionsPanel.setVisibility(View.GONE))
+                .start();
     }
 
     @Override
@@ -229,9 +266,8 @@ public class AiChatActivity extends AppCompatActivity {
         if (message.isEmpty() && selectedBitmap == null) {
             return;
         }
-        if (message.isEmpty()) {
-            message = "What sign is this?";
-        }
+        // A photo on its own is sent with no text: the chat shows just the picture,
+        // and the SignVibe AI server treats an empty message as "What sign is this?".
 
         Bitmap bitmapForRequest = selectedBitmap;
         adapter.add(AiChatMessage.user(message, selectedImageUri));
