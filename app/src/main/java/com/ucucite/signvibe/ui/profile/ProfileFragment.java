@@ -38,6 +38,7 @@ import com.ucucite.signvibe.data.ProgressRepository;
 import com.ucucite.signvibe.data.StudentProfile;
 import com.ucucite.signvibe.ui.auth.LoginActivity;
 import com.ucucite.signvibe.ui.game.LeaderboardAdapter;
+import com.ucucite.signvibe.ui.home.HomeActivity;
 import com.ucucite.signvibe.update.UpdateChecker;
 
 import java.util.ArrayList;
@@ -135,6 +136,13 @@ public class ProfileFragment extends Fragment {
 
         view.findViewById(R.id.rowHowTo).setOnClickListener(v ->
                 startActivity(new Intent(requireContext(), HowToUseActivity.class)));
+
+        // Replay the spotlight tour of the bottom tabs.
+        view.findViewById(R.id.rowTour).setOnClickListener(v -> {
+            if (getActivity() instanceof HomeActivity) {
+                ((HomeActivity) getActivity()).startAppTour();
+            }
+        });
 
         setupCheckForUpdates(view);
 

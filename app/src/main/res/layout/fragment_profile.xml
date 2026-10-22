@@ -476,6 +476,51 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/rowTour"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginBottom="14dp"
+            android:background="@drawable/bg_card_white"
+            android:elevation="2dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="16dp">
+
+            <FrameLayout
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:background="@drawable/bg_module_icon">
+
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_tour"
+                    android:contentDescription="@null" />
+
+            </FrameLayout>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="14dp"
+                android:text="@string/profile_take_tour"
+                android:textColor="@color/text_primary"
+                android:fontFamily="@font/baloo2"
+                android:textStyle="bold"
+                android:textSize="16sp" />
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_chevron_right"
+                android:contentDescription="@null" />
+
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/rowCheckUpdate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

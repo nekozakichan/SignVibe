@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Tip card for the app tour (SpotlightTourView). -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_tour_card"
+    android:elevation="8dp"
+    android:orientation="vertical"
+    android:paddingHorizontal="20dp"
+    android:paddingTop="18dp"
+    android:paddingBottom="14dp">
+
+    <TextView
+        android:id="@+id/txtTourStep"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/baloo2"
+        android:textStyle="bold"
+        android:textColor="@color/teal_dark"
+        android:textSize="13sp"
+        tools:text="2 of 7" />
+
+    <TextView
+        android:id="@+id/txtTourTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/baloo2"
+        android:textStyle="bold"
+        android:textColor="@color/text_primary"
+        android:textSize="21sp"
+        tools:text="Learn" />
+
+    <TextView
+        android:id="@+id/txtTourBody"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:fontFamily="@font/baloo2"
+        android:lineSpacingExtra="2dp"
+        android:textColor="@color/text_secondary"
+        android:textSize="15sp"
+        tools:text="Watch sign videos for letters, numbers and words." />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/btnTourSkip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
+            android:paddingHorizontal="6dp"
+            android:paddingVertical="10dp"
+            android:text="@string/tour_skip"
+            android:fontFamily="@font/baloo2"
+            android:textColor="@color/text_secondary"
+            android:textSize="15sp" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <TextView
+            android:id="@+id/btnTourNext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_button_primary"
+            android:paddingHorizontal="26dp"
+            android:paddingVertical="10dp"
+            android:text="@string/tour_next"
+            android:fontFamily="@font/baloo2"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
+    </LinearLayout>
+</LinearLayout>

@@ -206,4 +206,25 @@
     <string name="word_hear">🔊 Hear it</string>
     <string name="word_flip">Flip</string>
     <string name="word_permission_denied">Camera permission is needed to read signs.</string>
+
+    <!-- App tour (spotlight walkthrough on the home screen) -->
+    <string name="tour_step_fmt">%1$d of %2$d</string>
+    <string name="tour_next">Next</string>
+    <string name="tour_done">Let\'s go!</string>
+    <string name="tour_skip">Skip</string>
+    <string name="tour_welcome_title">Welcome to SignVibe! 👋</string>
+    <string name="tour_welcome_body">Let\'s take a quick look around so you know where everything is.</string>
+    <string name="tour_learn_title">Learn</string>
+    <string name="tour_learn_body">Watch sign videos for letters, numbers and words. Finish a module\'s lessons to unlock its quiz.</string>
+    <string name="tour_translate_title">Translate</string>
+    <string name="tour_translate_body">Show a sign to the camera and SignVibe tells you what it means.</string>
+    <string name="tour_game_title">Game</string>
+    <string name="tour_game_body">Practice your signs with fun games like Flappy Sign and Memory.</string>
+    <string name="tour_ai_title">SignVibe AI</string>
+    <string name="tour_ai_body">Ask about any sign, or take a photo of your hand to check it.</string>
+    <string name="tour_profile_title">Profile</string>
+    <string name="tour_profile_body">See your progress, stars and quiz scores.</string>
+    <string name="tour_end_title">You\'re all set! 🎉</string>
+    <string name="tour_end_body">You can take this tour again anytime from your Profile.</string>
+    <string name="profile_take_tour">Take the App Tour</string>
 </resources>

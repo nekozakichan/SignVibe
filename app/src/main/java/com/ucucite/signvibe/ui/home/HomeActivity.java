@@ -3,6 +3,7 @@ package com.ucucite.signvibe.ui.home;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
@@ -14,11 +15,22 @@ import com.ucucite.signvibe.ui.game.GameFragment;
 import com.ucucite.signvibe.ui.learn.LearnFragment;
 import com.ucucite.signvibe.ui.profile.ProfileFragment;
 import com.ucucite.signvibe.ui.translate.TranslateFragment;
+import com.ucucite.signvibe.ui.tour.AppTour;
+import com.ucucite.signvibe.ui.tour.SpotlightTourView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class HomeActivity extends AppCompatActivity {
 
     private BottomNavigationView bottomNav;
+
+    // App tour (spotlight walkthrough of the bottom tabs).
+    private SpotlightTourView activeTour;
+    private final OnBackPressedCallback closeTourOnBack = new OnBackPressedCallback(false) {
+        @Override
+        public void handleOnBackPressed() {
+            if (activeTour != null) activeTour.dismiss();
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +38,7 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
 
         bottomNav = findViewById(R.id.bottomNav);
+        getOnBackPressedDispatcher().addCallback(this, closeTourOnBack);
 
         // Default tab
         if (savedInstanceState == null) {
@@ -34,6 +47,10 @@ public class HomeActivity extends AppCompatActivity {
             UpdateChecker.checkForUpdate(this);
             // Warm the cache with all lesson videos so they can play offline later.
             LessonPrefetcher.prefetchAll(this);
+            // First visit for this student: walk them through the tabs.
+            if (AppTour.shouldAutoShow(this)) {
+                bottomNav.post(this::startAppTour);
+            }
         }
 
         bottomNav.setOnItemSelectedListener(item -> {
@@ -69,6 +86,17 @@ public class HomeActivity extends AppCompatActivity {
         if (bottomNav != null) {
             bottomNav.setSelectedItemId(R.id.nav_profile);
         }
+    }
+
+    /** Shows the spotlight tour of the bottom tabs. Also used by Profile's "Take the App Tour". */
+    public void startAppTour() {
+        if (activeTour != null || isFinishing()) return;
+        activeTour = SpotlightTourView.show(this, AppTour.homeSteps(this), completed -> {
+            AppTour.markSeen(this);
+            activeTour = null;
+            closeTourOnBack.setEnabled(false);
+        });
+        closeTourOnBack.setEnabled(true);
     }
 
     private void showFragment(Fragment fragment) {
