@@ -154,6 +154,17 @@
 
     <string name="quiz_tracing_instruction_number">Follow the arrows 1, 2, 3 to trace the number</string>
     <string name="quiz_tracing_progress_fmt">%1$d of %2$d</string>
+
+    <!-- tracing: stroke order + practice -->
+    <string name="practice_tracing">Practice Tracing</string>
+    <string name="tracing_practice_title">Tracing Practice</string>
+    <string name="tracing_practice_done">Done</string>
+    <string name="tracing_start_at_fmt">Start at number %1$d</string>
+    <string name="tracing_follow_arrow_fmt">Follow arrow %1$d all the way to the end</string>
+    <string name="tracing_praise">Great job! ⭐</string>
+    <string name="tracing_praise_spoken">Great job!</string>
+    <string name="tracing_done_tap_next">Well done! Tap Next.</string>
+    <string name="tracing_not_finished_fmt">Not finished yet — trace arrow %1$d next. Tap Next again to skip.</string>
     <string name="quiz_result_pass_fmt">Great job! You passed — %1$d of %2$d correct (%3$d%%)</string>
     <string name="quiz_result_fail_fmt">Nice try! %1$d of %2$d correct (%3$d%%). Keep practicing!</string>
     <string name="quiz_locked_hint">Finish all lessons to unlock the quiz</string>

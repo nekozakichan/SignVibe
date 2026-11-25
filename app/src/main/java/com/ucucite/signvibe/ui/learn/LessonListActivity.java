@@ -55,6 +55,7 @@ public class LessonListActivity extends AppCompatActivity {
     private RecyclerView recyclerLessons;
     private TextView txtEmptyState;
     private LinearLayout btnTakeQuiz;
+    private LinearLayout btnPracticeTracing;
     private TextView txtQuizLabel;
     private ListenerRegistration lessonsListener;
     private ListenerRegistration progressListener;
@@ -108,7 +109,9 @@ public class LessonListActivity extends AppCompatActivity {
         txtEmptyState = findViewById(R.id.txtEmptyState);
         btnTakeQuiz = findViewById(R.id.btnTakeQuiz);
         txtQuizLabel = findViewById(R.id.txtQuizLabel);
+        btnPracticeTracing = findViewById(R.id.btnPracticeTracing);
         setupQuizButton();
+        setupPracticeButton();
 
         listenToLessons();
         listenToProgress();
@@ -125,6 +128,21 @@ public class LessonListActivity extends AppCompatActivity {
                     : new Intent(this, QuizChoiceActivity.class);
             intent.putExtra(QuizTracingActivity.EXTRA_MODULE_ID, moduleId);
             intent.putExtra(QuizTracingActivity.EXTRA_MODULE_TITLE, moduleTitle);
+            startActivity(intent);
+        });
+    }
+
+    /**
+     * Tracing practice (Alphabet / Numbers): every letter or number in order,
+     * with the stroke-order arrows animated. Never locked and never scored, so
+     * students can practise before and after the quiz.
+     */
+    private void setupPracticeButton() {
+        btnPracticeTracing.setOnClickListener(v -> {
+            Intent intent = new Intent(this, QuizTracingActivity.class);
+            intent.putExtra(QuizTracingActivity.EXTRA_MODULE_ID, moduleId);
+            intent.putExtra(QuizTracingActivity.EXTRA_MODULE_TITLE, moduleTitle);
+            intent.putExtra(QuizTracingActivity.EXTRA_PRACTICE, true);
             startActivity(intent);
         });
     }
@@ -256,6 +274,7 @@ public class LessonListActivity extends AppCompatActivity {
         if (lastLessons.isEmpty()) {
             recyclerLessons.setVisibility(View.GONE);
             btnTakeQuiz.setVisibility(View.GONE);
+            btnPracticeTracing.setVisibility(View.GONE);
             txtEmptyState.setVisibility(View.VISIBLE);
         } else {
             recyclerLessons.setVisibility(View.VISIBLE);
@@ -276,6 +295,10 @@ public class LessonListActivity extends AppCompatActivity {
      * A failed attempt does NOT lock it — retry until passed.
      */
     private void updateQuizButtonState() {
+        // Practice needs at least one lesson to take letters/numbers from.
+        btnPracticeTracing.setVisibility(
+                isTracingModule() && !lastLessons.isEmpty() ? View.VISIBLE : View.GONE);
+
         if (!isTracingModule() && publishedQuestionCount == 0) {
             btnTakeQuiz.setVisibility(View.GONE);
             return;

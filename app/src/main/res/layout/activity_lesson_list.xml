@@ -91,6 +91,29 @@
                 android:textSize="14sp"
                 android:visibility="gone" />
 
+            <!-- Tracing practice (Alphabet / Numbers only) — never locked, nothing scored -->
+            <LinearLayout
+                android:id="@+id/btnPracticeTracing"
+                android:layout_width="match_parent"
+                android:layout_height="54dp"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_button_outline_teal"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/practice_tracing"
+                    android:textColor="@color/teal_dark"
+                    android:fontFamily="@font/baloo2"
+                    android:textStyle="bold"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
+
             <LinearLayout
                 android:id="@+id/btnTakeQuiz"
                 android:layout_width="match_parent"
